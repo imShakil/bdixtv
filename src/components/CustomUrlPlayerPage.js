@@ -184,7 +184,7 @@ export default function CustomUrlPlayerPage() {
               channels={pagedPlaylistChannels}
               selectedChannel={selectedChannel}
               onSelect={handleSelectPlaylistChannel}
-              showAds={false}
+              showAds={showAds && adsConfig?.slots?.inFeed?.enabled}
               adsConfig={adsConfig}
             />
 
