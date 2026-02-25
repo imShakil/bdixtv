@@ -1,6 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─────────────────────────────────────────────
+   Your original global styles (unchanged)
+───────────────────────────────────────────── */
 
 :root {
   color-scheme: light;
@@ -38,5 +44,332 @@ main {
   main {
     padding-left: 1.35rem;
     padding-right: 1.35rem;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   LoadStatePanel — keyframes
+───────────────────────────────────────────── */
+
+@keyframes lsp-signal-pulse {
+  0%, 100% { transform: scaleY(0.3); opacity: 0.4; }
+  50%       { transform: scaleY(1);   opacity: 1;   }
+}
+
+@keyframes lsp-scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes lsp-flicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.6; }
+  94%       { opacity: 1; }
+  97%       { opacity: 0.8; }
+  98%       { opacity: 1; }
+}
+
+@keyframes lsp-dot-blink {
+  0%, 66% { opacity: 1; }
+  67%, 100% { opacity: 0; }
+}
+
+@keyframes lsp-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lsp-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+@keyframes lsp-glow-pulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(0, 210, 255, 0.25), 0 0 40px rgba(0, 210, 255, 0.08); }
+  50%       { box-shadow: 0 0 28px rgba(0, 210, 255, 0.45), 0 0 60px rgba(0, 210, 255, 0.18); }
+}
+
+@keyframes lsp-progress-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+/* ─────────────────────────────────────────────
+   LoadStatePanel — shared card base
+───────────────────────────────────────────── */
+
+.lsp-card {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Syne', sans-serif;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 210, 255, 0.18);
+  background: linear-gradient(145deg, #0c1520 0%, #0a1018 60%, #0c1a24 100%);
+}
+
+/* ─────────────────────────────────────────────
+   LoadStatePanel — scanline overlay
+───────────────────────────────────────────── */
+
+.lsp-scanline-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lsp-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 210, 255, 0.06), transparent);
+  animation: lsp-scanline 3.5s linear infinite;
+}
+
+/* ─────────────────────────────────────────────
+   LoadStatePanel — CRT corner brackets
+───────────────────────────────────────────── */
+
+.lsp-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgba(0, 210, 255, 0.4);
+}
+
+.lsp-corner--tl { top: 10px;    left: 10px;  border-top:    1px solid; border-left:  1px solid; }
+.lsp-corner--tr { top: 10px;    right: 10px; border-top:    1px solid; border-right: 1px solid; }
+.lsp-corner--bl { bottom: 10px; left: 10px;  border-bottom: 1px solid; border-left:  1px solid; }
+.lsp-corner--br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
+
+/* ─────────────────────────────────────────────
+   LoadStatePanel — loading state
+───────────────────────────────────────────── */
+
+.lsp-loading-outer {
+  display: flex;
+  min-height: 55vh;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.lsp-loading-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 40px 32px 36px;
+  text-align: center;
+  animation:
+    lsp-glow-pulse 2.4s ease-in-out infinite,
+    lsp-flicker 8s linear infinite;
+}
+
+/* LIVE badge */
+.lsp-live-badge {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(0, 210, 255, 0.6);
+}
+
+.lsp-live-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00d2ff;
+  animation: lsp-dot-blink 1s step-end infinite;
+}
+
+/* Icon ring */
+.lsp-icon-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  background: radial-gradient(circle, rgba(0, 210, 255, 0.08) 0%, transparent 70%);
+  margin-bottom: 24px;
+}
+
+/* Signal bars */
+.lsp-signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 28px;
+}
+
+.lsp-bar {
+  width: 4px;
+  background: linear-gradient(to top, #00d2ff, #0090cc);
+  border-radius: 2px;
+  transform-origin: bottom;
+  animation: lsp-signal-pulse 0.7s ease-in-out infinite;
+}
+
+/* Connecting text */
+.lsp-connecting-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #e8f4f8;
+}
+
+.lsp-connecting-sub {
+  margin: 0 0 28px;
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  color: rgba(0, 210, 255, 0.55);
+  letter-spacing: 0.04em;
+}
+
+/* Blinking dots */
+.lsp-dots {
+  font-family: monospace;
+  letter-spacing: 0.15em;
+}
+
+.lsp-dot {
+  display: inline-block;
+  animation: lsp-dot-blink 1.2s step-end infinite;
+}
+
+/* Progress track */
+.lsp-progress-track {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.lsp-progress-sweep {
+  height: 100%;
+  width: 25%;
+  background: linear-gradient(90deg, transparent, #00d2ff, transparent);
+  border-radius: 99px;
+  animation: lsp-progress-sweep 1.8s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────
+   LoadStatePanel — error state
+───────────────────────────────────────────── */
+
+.lsp-error-card {
+  padding: 36px 32px 32px;
+  border: 1px solid rgba(255, 80, 60, 0.28);
+  animation: lsp-fade-up 0.4s ease both;
+}
+
+.lsp-shake {
+  animation: lsp-shake 0.4s ease !important;
+}
+
+.lsp-error-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.lsp-error-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 80, 60, 0.4);
+  background: rgba(255, 80, 60, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.lsp-error-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 80, 60, 0.7);
+  margin-bottom: 2px;
+}
+
+.lsp-error-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #f0e8e8;
+}
+
+.lsp-error-message {
+  margin: 0 0 28px;
+  font-size: 13px;
+  font-family: 'Space Mono', monospace;
+  color: rgba(240, 232, 232, 0.55);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+.lsp-error-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 80, 60, 0.3), transparent);
+  margin-bottom: 24px;
+}
+
+.lsp-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 80, 60, 0.45);
+  background: rgba(255, 80, 60, 0.12);
+  color: #ffb3aa;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.lsp-retry-btn:hover {
+  background: rgba(255, 80, 60, 0.22);
+  border-color: rgba(255, 80, 60, 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lsp-loading-card,
+  .lsp-scanline,
+  .lsp-live-dot,
+  .lsp-bar,
+  .lsp-dot,
+  .lsp-progress-sweep,
+  .lsp-shake {
+    animation: none !important;
+  }
+
+  .lsp-card,
+  .lsp-retry-btn {
+    transition: none !important;
   }
 }
