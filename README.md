@@ -79,7 +79,7 @@ Implemented client-side observability:
 
 ## Realtime Visitor Count (Cloudflare Worker)
 
-This project includes a client footer counter (`Online now (approx)`) that works with a free Cloudflare Worker + KV backend.
+This project includes a client footer counter (`Online now (approx)`) that works with a Cloudflare Worker + Durable Object backend.
 
 - Worker script: `cloudflare/visitor-counter-worker.js`
 - Setup guide: [docs/cloudflare-visitors.md](docs/cloudflare-visitors.md)

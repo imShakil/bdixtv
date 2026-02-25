@@ -1,4 +1,4 @@
-# Cloudflare Worker Realtime Visitors
+# Cloudflare Worker Realtime Visitors (Durable Objects)
 
 This setup gives an approximate "online now" counter plus total unique visitors for a static GitHub Pages site.
 
@@ -7,7 +7,7 @@ This setup gives an approximate "online now" counter plus total unique visitors 
 `wrangler` is Cloudflare's official CLI tool used to:
 
 - authenticate your Cloudflare account
-- create and manage Worker resources (like KV namespaces)
+- create and manage Worker resources (like Durable Objects)
 - deploy Worker code to Cloudflare
 
 ## Install Wrangler
@@ -32,24 +32,21 @@ Login to Cloudflare:
 wrangler login
 ```
 
-## 1) Create KV namespace
-
-```bash
-wrangler kv namespace create VISITORS
-```
-
-Copy the namespace `id`.
-
-## 2) Create `wrangler.toml`
+## 1) Configure `wrangler.toml`
 
 ```toml
 name = "bdiptv-visitors"
-main = "cloudflare/visitor-counter-worker.js"
+main = "./visitor-counter-worker.js"
 compatibility_date = "2026-02-25"
 
-kv_namespaces = [
-  { binding = "VISITORS", id = "YOUR_NAMESPACE_ID" }
+[durable_objects]
+bindings = [
+  { name = "VISITOR_COUNTER", class_name = "VisitorCounterDO" }
 ]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["VisitorCounterDO"]
 
 [vars]
 ALLOWED_ORIGIN = "your-streaming-url"
@@ -58,7 +55,7 @@ VISITOR_TTL_SECONDS = "180"
 
 Use your real production origin (or `*` while testing).
 
-## 3) Deploy worker
+## 2) Deploy worker
 
 ```bash
 wrangler deploy
@@ -68,7 +65,7 @@ After deploy, copy your worker URL, e.g.:
 
 `https://bdiptv-visitors.<subdomain>.workers.dev`
 
-## 4) Configure frontend
+## 3) Configure frontend
 
 For local development, create `.env.local` in project root:
 
@@ -109,6 +106,6 @@ The frontend now starts sending:
 ## Notes
 
 - Count is approximate (tabs, connectivity, ad blockers, TTL window).
-- `totalVisitors` is approximate unique visitors (KV-based, eventually consistent).
+- `totalVisitors` is tracked by the Durable Object and persisted via DO storage.
 - Online window is controlled by `VISITOR_TTL_SECONDS` (default 180 seconds).
 - Every `wrangler deploy` publishes the latest Worker version immediately.
