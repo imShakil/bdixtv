@@ -68,3 +68,16 @@ export function normalizeStreamSource(source) {
     return source;
   }
 }
+
+export function isHttpIpSource(source) {
+  if (!source) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(source);
+    return parsed.protocol === 'http:' && isIpHostname(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
