@@ -8,9 +8,9 @@ import PaginationFooter from '@/components/PaginationFooter';
 import VideoPlayer from '@/components/VideoPlayer';
 import PlayerWithSidebar from '@/components/PlayerWithSidebar';
 import AdSlot from '@/components/AdSlot';
+import useChannelFilteringPagination from '@/hooks/useChannelFilteringPagination';
 import { logEvent } from '@/utils/telemetry';
 
-const PAGE_SIZE = 12;
 const ENABLE_STICKY_PLAYER = false; // Toggle sticky player feature
 
 export default function ChannelBrowser({
@@ -19,46 +19,26 @@ export default function ChannelBrowser({
   eyebrow,
   title
 }) {
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('all');
   const [selectedChannel, setSelectedChannel] = useState(channels[0] || null);
-  const [page, setPage] = useState(1);
   const [autoplay, setAutoplay] = useState(true);
   const [isSticky, setIsSticky] = useState(false);
   const [showStickyPlayer, setShowStickyPlayer] = useState(true);
 
   const showAds = adsConfig?.enabled || false;
-
-  const categories = useMemo(() => {
-    const values = new Set(channels.map((item) => item.category).filter(Boolean));
-    return ['all', ...Array.from(values).sort((a, b) => a.localeCompare(b))];
-  }, [channels]);
-
-  const filteredChannels = useMemo(() => {
-    return channels.filter((channel) => {
-      const matchedQuery = channel.name.toLowerCase().includes(query.toLowerCase().trim());
-      const matchedCategory = category === 'all' || channel.category === category;
-
-      return matchedQuery && matchedCategory;
-    });
-  }, [channels, query, category]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredChannels.length / PAGE_SIZE));
-
-  const pagedChannels = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return filteredChannels.slice(start, start + PAGE_SIZE);
-  }, [filteredChannels, page]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [query, category]);
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
+  const {
+    query,
+    setQuery,
+    category,
+    setCategory,
+    page,
+    setPage,
+    categories,
+    filteredChannels,
+    pagedChannels,
+    totalPages,
+    rangeStart,
+    rangeEnd
+  } = useChannelFilteringPagination({ channels });
 
   useEffect(() => {
     if (!selectedChannel && channels.length) {
@@ -85,9 +65,6 @@ export default function ChannelBrowser({
       return () => window.removeEventListener('scroll', handleScroll);
     }
   }, []);
-
-  const rangeStart = filteredChannels.length ? (page - 1) * PAGE_SIZE + 1 : 0;
-  const rangeEnd = filteredChannels.length ? Math.min(page * PAGE_SIZE, filteredChannels.length) : 0;
 
   return (
     <div className="space-y-5 md:space-y-7">

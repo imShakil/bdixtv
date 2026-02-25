@@ -1,17 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import ChannelFiltersBar from '@/components/ChannelFiltersBar';
 import PaginationFooter from '@/components/PaginationFooter';
 import PlayerWithSidebar from '@/components/PlayerWithSidebar';
 import ChannelGrid from '@/components/ChannelGrid';
 import AdSlot from '@/components/AdSlot';
 import useAdsConfig from '@/hooks/useAdsConfig';
+import useChannelFilteringPagination from '@/hooks/useChannelFilteringPagination';
 import { isHttpUrl, normalizeIframeSource } from '@/utils/sourceUtils';
 import { loadPlaylistChannelsFromUrl } from '@/utils/channels';
 import { logEvent } from '@/utils/telemetry';
-
-const PAGE_SIZE = 12;
 
 function resolveType(url, selectedType) {
   if (selectedType !== 'auto') {
@@ -36,45 +35,24 @@ export default function CustomUrlPlayerPage() {
   const [customError, setCustomError] = useState('');
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [playlistChannels, setPlaylistChannels] = useState([]);
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('all');
-  const [page, setPage] = useState(1);
   const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(false);
   const adsConfig = useAdsConfig();
 
   const showAds = adsConfig?.enabled || false;
-  const categories = useMemo(() => {
-    const values = new Set(playlistChannels.map((item) => item.category).filter(Boolean));
-    return ['all', ...Array.from(values).sort((a, b) => a.localeCompare(b))];
-  }, [playlistChannels]);
-
-  const filteredPlaylistChannels = useMemo(() => {
-    return playlistChannels.filter((channel) => {
-      const matchedQuery = channel.name.toLowerCase().includes(query.toLowerCase().trim());
-      const matchedCategory = category === 'all' || channel.category === category;
-      return matchedQuery && matchedCategory;
-    });
-  }, [playlistChannels, query, category]);
-  const totalPages = Math.max(1, Math.ceil(filteredPlaylistChannels.length / PAGE_SIZE));
-  const pagedPlaylistChannels = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return filteredPlaylistChannels.slice(start, start + PAGE_SIZE);
-  }, [filteredPlaylistChannels, page]);
-
-  const rangeStart = filteredPlaylistChannels.length ? (page - 1) * PAGE_SIZE + 1 : 0;
-  const rangeEnd = filteredPlaylistChannels.length
-    ? Math.min(page * PAGE_SIZE, filteredPlaylistChannels.length)
-    : 0;
-
-  useEffect(() => {
-    setPage(1);
-  }, [query, category]);
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
+  const {
+    query,
+    setQuery,
+    category,
+    setCategory,
+    page,
+    setPage,
+    categories,
+    filteredChannels: filteredPlaylistChannels,
+    pagedChannels: pagedPlaylistChannels,
+    totalPages,
+    rangeStart,
+    rangeEnd
+  } = useChannelFilteringPagination({ channels: playlistChannels });
 
   const handlePlayCustomUrl = async () => {
     const value = customUrl.trim();
