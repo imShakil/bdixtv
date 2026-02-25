@@ -1,4 +1,4 @@
-import FeaturingChannelApp from '@/components/FeaturingChannelApp';
+import FeaturingChannelAppContainer from '@/features/featuring/containers/FeaturingChannelAppContainer';
 import { FEATURING_PAGE_METADATA } from '@/config/site';
 
 export const metadata = {
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function FeaturingPage() {
-  return <FeaturingChannelApp />;
+  return <FeaturingChannelAppContainer />;
 }

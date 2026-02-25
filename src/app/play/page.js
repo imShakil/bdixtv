@@ -1,4 +1,4 @@
-import CustomUrlPlayerPage from '@/components/CustomUrlPlayerPage';
+import CustomUrlPlayerContainer from '@/features/play/containers/CustomUrlPlayerContainer';
 import { PLAY_PAGE_METADATA } from '@/config/site';
 
 export const metadata = {
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function PlayPage() {
-  return <CustomUrlPlayerPage />;
+  return <CustomUrlPlayerContainer />;
 }

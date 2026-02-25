@@ -1,5 +1,5 @@
-import ChannelApp from '@/components/ChannelApp';
+import ChannelAppContainer from '@/features/channels/containers/ChannelAppContainer';
 
 export default function HomePage() {
-  return <ChannelApp />;
+  return <ChannelAppContainer />;
 }

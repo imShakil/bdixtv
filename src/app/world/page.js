@@ -1,4 +1,4 @@
-import WorldChannelApp from '@/components/WorldChannelApp';
+import WorldChannelAppContainer from '@/features/world/containers/WorldChannelAppContainer';
 import { WORLD_PAGE_METADATA } from '@/config/site';
 
 export const metadata = {
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function WorldPage() {
-  return <WorldChannelApp />;
+  return <WorldChannelAppContainer />;
 }
