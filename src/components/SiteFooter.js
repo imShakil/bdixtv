@@ -24,7 +24,7 @@ export default function SiteFooter() {
 
           <div className="border-t border-steel/15 pt-2.5 text-[11px] md:col-span-2 md:text-xs">
             <p>
-              © {new Date().getFullYear()} BDIX IPTV · Use at your own discretion ·{' '}
+              © {new Date().getFullYear()} <a href="/">BDIX IPTV</a> · Use at your own discretion ·{' '}
               <Link href="/privacy" className="text-sea hover:underline">
                 Privacy Policy
               </Link>
