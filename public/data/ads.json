@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "slots": {
+    "header": {
+      "enabled": false,
+      "slot": "7560642116",
+      "format": "horizontal"
+    },
+    "belowPlayer": {
+      "enabled": true,
+      "slot": "8250402676",
+      "format": "horizontal"
+    },
+    "inFeed": {
+      "enabled": true,
+      "slot": "1168146663",
+      "format": "fluid",
+      "layoutKey": "-fb+5w+4e-db+86"
+    },
+    "sidebar": {
+      "enabled": true,
+      "slot": "8250402676",
+      "format": "horizontal"
+    }
+  }
+}

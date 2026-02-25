@@ -1,0 +1,14 @@
+services:
+  bdiptv:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bdiptv
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev -- -H 0.0.0.0 -p 3000
