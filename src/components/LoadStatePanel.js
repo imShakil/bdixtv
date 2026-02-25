@@ -10,8 +10,16 @@ export default function LoadStatePanel({
   if (status === 'loading') {
     return (
       <main>
-        <div className="rounded-2xl border border-steel/20 bg-white/80 p-8 text-center text-steel shadow-card">
-          {loadingMessage}
+        <div className="flex min-h-[55vh] items-center justify-center">
+          <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl border border-steel/20 bg-white/90 px-6 py-10 text-center shadow-card">
+            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-cyan-50 ring-1 ring-sea/30">
+              <span className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
+            </span>
+            <div className="space-y-1">
+              <p className="text-base font-semibold text-ink">Loading channels</p>
+              <p className="text-sm text-steel">{loadingMessage}</p>
+            </div>
+          </div>
         </div>
       </main>
     );

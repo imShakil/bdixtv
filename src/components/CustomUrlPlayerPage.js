@@ -149,7 +149,7 @@ export default function CustomUrlPlayerPage() {
                 disabled={isLoadingPlaylist}
                 className="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-steel"
               >
-                {isLoadingPlaylist ? 'Loading playlist...' : 'Play URL'}
+                {isLoadingPlaylist ? 'Loading playlist...' : 'Play IPTV'}
               </button>
             </div>
             {customError ? <p className="text-xs text-rose-700">{customError}</p> : null}
