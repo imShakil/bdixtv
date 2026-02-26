@@ -48,6 +48,7 @@ export default function RootLayout({ children }) {
           gtag('js', new Date());
           gtag('config', 'G-YY76ZPGRHG');
         `}</script>
+        <script src="https://pl28799366.effectivegatecpm.com/c7/21/73/c721736c340f6ebd2f5dc866ecf0d945.js"></script>
       </head>
       <body>
         <SiteHeader />
