@@ -18,42 +18,68 @@ export default function PlayerWithSidebar({
     : emptySubtitle;
 
   return (
-    <div className="grid gap-3 md:gap-4 lg:grid-cols-[minmax(0,2.3fr)_minmax(0,1fr)]">
+    <div className="grid gap-3 md:gap-4 lg:grid-cols-[minmax(0,2.3fr)_minmax(0,1fr)] lg:grid-rows-[1fr]">
       <div className="min-w-0">
         <VideoPlayer channel={selectedChannel} autoplay={autoplay} />
       </div>
 
-      <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-steel/20 bg-white/85 p-4 shadow-card md:p-5">
-        <div className="rounded-xl border border-sea/30 bg-cyan-50 p-3.5">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-steel/80">Now Playing</p>
-            <div className="flex items-center gap-1.5">
-              {selectedChannel ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-rose-700">
-                  <span className="relative inline-flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-600" />
+      {/* Outer wrapper takes the grid cell height, inner div clips */}
+      <div className="min-w-0 lg:h-0 lg:min-h-full overflow-hidden rounded-2xl">
+        <div className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border border-steel/20 bg-white/85 shadow-card">
+          <div className="border-sea/30 bg-cyan-50 p-3.5 shrink-0">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-steel/80">Now Playing</p>
+              <div className="flex items-center gap-1.5">
+                {selectedChannel ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-rose-700">
+                    <span className="relative inline-flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-600" />
+                    </span>
+                    Live
                   </span>
-                  Live
+                ) : null}
+                <span className="inline-flex rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold tracking-[0.02em] text-steel">
+                  <LiveVisitorCount compact />
                 </span>
-              ) : null}
-              <span className="inline-flex rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold tracking-[0.02em] text-steel">
-                <LiveVisitorCount compact />
-              </span>
+              </div>
             </div>
+            <p className="truncate pt-1 text-base font-semibold text-ink">
+              {selectedChannel ? selectedChannel.name : emptyTitle}
+            </p>
+            <p className="truncate text-xs text-steel">
+              {metaText}
+            </p>
           </div>
-          <p className="truncate pt-1 text-base font-semibold text-ink">
-            {selectedChannel ? selectedChannel.name : emptyTitle}
+          <p className="text-center text-[10px] font-medium tracking-[0.04em] text-steel/70">
+              Sponsored
           </p>
-          <p className="truncate text-xs text-steel">
-            {metaText}
-          </p>
+          {showAds && adsConfig?.slots?.sidebar?.enabled ? (
+            <div className="min-w-0 w-full overflow-hidden rounded-lg" style={{ minHeight: '50px', height: '250px', maxHeight: '250px' }}>
+              <AdSlot slot="sidebar" adsConfig={adsConfig} />
+            </div>
+          ) : null}
+
+          <div className="w-full min-w-0 overflow-hidden shrink-0">
+            <a
+              href="https://beta.publishers.adsterra.com/referral/1XU1UuDLQw"
+              rel="nofollow sponsored noopener noreferrer"
+              target="_blank"
+              aria-label="Visit Adsterra referral partner page"
+              className="mx-auto block w-full"
+            >
+              <img
+                alt="Adsterra sponsored referral banner"
+                src="https://landings-cdn.adsterratech.com/referralBanners/png/600%20x%20250%20px.png"
+                width="600"
+                height="250"
+                loading="lazy"
+                decoding="async"
+                className="h-auto w-full rounded-lg shadow-sm ring-1 ring-black/5"
+              />
+            </a>
+          </div>
         </div>
-        {showAds && adsConfig?.slots?.sidebar?.enabled ? (
-          <div className="min-w-0 overflow-hidden">
-            <AdSlot slot="sidebar" adsConfig={adsConfig} />
-          </div>
-        ) : null}
       </div>
     </div>
   );
