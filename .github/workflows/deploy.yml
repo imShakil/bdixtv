@@ -44,6 +44,7 @@ jobs:
           NEXT_PUBLIC_VISITORS_API: ${{ secrets.NEXT_PUBLIC_VISITORS_API }}
           NEXT_PUBLIC_WORLD_PLAYLIST_URL: ${{ secrets.NEXT_PUBLIC_WORLD_PLAYLIST_URL }}
           NEXT_PUBLIC_PLAYLIST_URL: ${{ secrets.NEXT_PUBLIC_PLAYLIST_URL }}
+          NEXT_PUBLIC_FEATURED_JSON_PLAYLIST: ${{ secrets.NEXT_PUBLIC_FEATURED_JSON_PLAYLIST }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
