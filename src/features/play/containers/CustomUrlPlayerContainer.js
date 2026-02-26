@@ -63,6 +63,7 @@ export default function CustomUrlPlayerPage() {
   const [customUrl, setCustomUrl] = useState('');
   const [customType, setCustomType] = useState('auto');
   const [customError, setCustomError] = useState('');
+  const [hideUrlInputBar, setHideUrlInputBar] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [playlistChannels, setPlaylistChannels] = useState([]);
   const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(false);
@@ -175,8 +176,10 @@ export default function CustomUrlPlayerPage() {
       return;
     }
     autoLoadKeyRef.current = key;
+    setHideUrlInputBar(true);
 
-    setCustomUrl(urlParam);
+    // Keep redirected channel URL out of the visible input.
+    setCustomUrl('');
     setCustomType(validType);
     playCustomUrl({
       value: urlParam,
@@ -194,35 +197,37 @@ export default function CustomUrlPlayerPage() {
     <main>
       <div className="space-y-5 md:space-y-7">
         <section className="space-y-3 md:space-y-4">
-          <div className="space-y-4 rounded-xl border border-steel/20 bg-white/80 px-4 py-3 shadow-card">
-            <div className="grid gap-2.5 md:grid-cols-[1fr_auto_auto] md:items-center">
-              <input
-                value={customUrl}
-                onChange={(event) => setCustomUrl(event.target.value)}
-                placeholder="Paste stream URL (m3u8 / iframe / mp4)"
-                className="rounded-lg border border-steel/20 bg-white px-3 py-2.5 text-sm outline-none"
-              />
-              <select
-                value={customType}
-                onChange={(event) => setCustomType(event.target.value)}
-                className="rounded-lg border border-steel/20 bg-white px-3 py-2.5 text-sm outline-none"
-              >
-                <option value="auto">Auto type</option>
-                <option value="m3u8">M3U8</option>
-                <option value="iframe">Iframe</option>
-                <option value="custom">Custom URL</option>
-              </select>
-              <button
-                type="button"
-                onClick={handlePlayCustomUrl}
-                disabled={isLoadingPlaylist}
-                className="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-steel"
-              >
-                {isLoadingPlaylist ? 'Loading playlist...' : 'Play IPTV'}
-              </button>
+          {!hideUrlInputBar ? (
+            <div className="space-y-4 rounded-xl border border-steel/20 bg-white/80 px-4 py-3 shadow-card">
+              <div className="grid gap-2.5 md:grid-cols-[1fr_auto_auto] md:items-center">
+                <input
+                  value={customUrl}
+                  onChange={(event) => setCustomUrl(event.target.value)}
+                  placeholder="Paste stream URL (m3u8 / iframe / mp4)"
+                  className="rounded-lg border border-steel/20 bg-white px-3 py-2.5 text-sm outline-none"
+                />
+                <select
+                  value={customType}
+                  onChange={(event) => setCustomType(event.target.value)}
+                  className="rounded-lg border border-steel/20 bg-white px-3 py-2.5 text-sm outline-none"
+                >
+                  <option value="auto">Auto type</option>
+                  <option value="m3u8">M3U8</option>
+                  <option value="iframe">Iframe</option>
+                  <option value="custom">Custom URL</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={handlePlayCustomUrl}
+                  disabled={isLoadingPlaylist}
+                  className="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-steel"
+                >
+                  {isLoadingPlaylist ? 'Loading playlist...' : 'Play IPTV'}
+                </button>
+              </div>
+              {customError ? <p className="text-xs text-rose-700">{customError}</p> : null}
             </div>
-            {customError ? <p className="text-xs text-rose-700">{customError}</p> : null}
-          </div>
+          ) : null}
 
           {/* Ad Slot 1: Header Banner */}
           {showAds && adsConfig?.slots?.header?.enabled && <AdSlot slot="header" adsConfig={adsConfig} />}
