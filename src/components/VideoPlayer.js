@@ -322,6 +322,7 @@ export default function VideoPlayer({ channel, autoplay }) {
             key={`native-${channel.source}-${playerNonce}`}
             src={channel.source}
             controls
+            autoPlay={Boolean(autoplay)}
             playsInline
             muted
             preload="metadata"
@@ -348,7 +349,7 @@ export default function VideoPlayer({ channel, autoplay }) {
           key={`react-${channel.source}-${playerNonce}`}
           url={channel.source}
           controls
-          playing={isMobile ? false : autoplay}
+          playing={Boolean(autoplay)}
           muted={Boolean(autoplay)}
           onPlay={() => {
             setPlayerError(null);
