@@ -1,5 +1,11 @@
 import { parseM3U8 } from '@/utils/m3u8Parser';
-import { isHttpIpSource, isHttpUrl, normalizeIframeSource, normalizeStreamSource } from '@/utils/sourceUtils';
+import {
+  isHttpIpSource,
+  isHttpUrl,
+  isLikelyM3uSource,
+  normalizeIframeSource,
+  normalizeStreamSource
+} from '@/utils/sourceUtils';
 
 export const PLAYLIST_URL = process.env.NEXT_PUBLIC_PLAYLIST_URL || '';
 export const WORLD_PLAYLIST_URL = process.env.NEXT_PUBLIC_WORLD_PLAYLIST_URL || '';
@@ -19,7 +25,7 @@ function sanitizeChannel(channel, index, origin) {
   const id = channel.id || `${origin}-${index + 1}`;
   const name = (channel.name || '').trim() || `Channel ${index + 1}`;
   const logo = (channel.logo || '').trim();
-  const type = channel.type || 'custom';
+  let type = (channel.type || 'custom').toLowerCase();
   let source = (channel.source || '').trim();
   const category = normalizeCategory(channel.category);
   const language = (channel.language || '').trim();
@@ -35,11 +41,18 @@ function sanitizeChannel(channel, index, origin) {
 
   // source = normalizeStreamSource(source);
 
-  if (type === 'm3u8' && !isHttpUrl(source)) {
-    return null;
+  if (type === 'iframe') {
+    source = normalizeIframeSource(source);
+    if (!source) {
+      return null;
+    }
   }
 
-  if (type === 'iframe' && !normalizeIframeSource(source)) {
+  if (isLikelyM3uSource(source)) {
+    type = 'm3u8';
+  }
+
+  if ((type === 'm3u8' || type === 'iframe') && !isHttpUrl(source)) {
     return null;
   }
 

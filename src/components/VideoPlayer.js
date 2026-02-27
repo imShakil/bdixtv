@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { AlertTriangle, ExternalLink, RefreshCw } from 'lucide-react';
-import { normalizeIframeSource } from '@/utils/sourceUtils';
+import { isLikelyM3uSource, normalizeIframeSource } from '@/utils/sourceUtils';
 import { logEvent } from '@/utils/telemetry';
 
 const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
@@ -281,7 +281,9 @@ export default function VideoPlayer({ channel, autoplay }) {
     window.location.protocol === 'https:' &&
     channel.source.startsWith('http://');
 
-  if (channel.type === 'iframe') {
+  const shouldRenderIframe = channel.type === 'iframe' && !isLikelyM3uSource(channel.source);
+
+  if (shouldRenderIframe) {
     const iframeSrc = normalizeIframeSource(channel.source);
 
     if (!iframeSrc) {

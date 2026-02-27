@@ -22,6 +22,15 @@ export function normalizeIframeSource(source) {
   return isHttpUrl(candidate) ? candidate : '';
 }
 
+export function isLikelyM3uSource(source) {
+  if (!source) {
+    return false;
+  }
+
+  const normalized = normalizeIframeSource(source) || source;
+  return /\.m3u8?([?#]|$)/i.test(normalized);
+}
+
 function isIPv4(hostname) {
   const parts = hostname.split('.');
 
