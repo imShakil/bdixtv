@@ -1,6 +1,5 @@
 const HOT_CHANNEL_KEYWORDS = [
   'sport',
-  'star',
   'crick',
   'football',
   'soccer',
@@ -19,8 +18,6 @@ const HOT_CHANNEL_KEYWORDS = [
   'psl',
   't20',
   'odi',
-  'big bash',
-  'test match',
   'star sport',
   'ten sport',
   'sony sport',
