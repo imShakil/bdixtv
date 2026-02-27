@@ -80,15 +80,6 @@ Implemented client-side observability:
 - Basic metrics in browser console (`[bdiptv:metric]`)
 - Recent telemetry stored in `localStorage` key: `bdiptv_telemetry`
 
-## Realtime Visitor Count (Cloudflare Worker)
-
-This project includes a client footer counter (`Online now (approx)`) that works with a Cloudflare Worker + Durable Object backend.
-
-- Worker script: `cloudflare/visitor-counter-worker.js`
-- Setup guide: [docs/cloudflare-visitors.md](docs/cloudflare-visitors.md)
-
-Set `NEXT_PUBLIC_VISITORS_API` to your deployed worker URL during build/deploy.
-
 ## Live URL
 
 The site is live at: [https://bdixtv.mhosen.com](https://bdixtv.mhosen.com)
