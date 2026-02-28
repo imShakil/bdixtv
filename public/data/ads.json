@@ -54,7 +54,7 @@
         "androidAdUnitId": "ca-app-pub-3940256099942544/6300978111",
         "iosAdUnitId": "ca-app-pub-2449944472030683/9264241060",
         "position": "TOP_CENTER",
-        "adSize": "BANNER",
+        "adSize": "ADAPTIVE_BANNER",
         "isTesting": false
       },
       "eventBottom": {
@@ -63,7 +63,7 @@
         "androidAdUnitId": "ca-app-pub-3940256099942544/6300978111",
         "iosAdUnitId": "ca-app-pub-2449944472030683/7951159396",
         "position": "BOTTOM_CENTER",
-        "adSize": "BANNER",
+        "adSize": "ADAPTIVE_BANNER",
         "isTesting": false
       }
     }

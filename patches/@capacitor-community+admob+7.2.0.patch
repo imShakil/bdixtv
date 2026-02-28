@@ -1,0 +1,17 @@
+diff --git a/node_modules/@capacitor-community/admob/ios/Sources/AdMobPlugin/Banner/BannerExecutor.swift b/node_modules/@capacitor-community/admob/ios/Sources/AdMobPlugin/Banner/BannerExecutor.swift
+index 412a97b..58b493f 100644
+--- a/node_modules/@capacitor-community/admob/ios/Sources/AdMobPlugin/Banner/BannerExecutor.swift
++++ b/node_modules/@capacitor-community/admob/ios/Sources/AdMobPlugin/Banner/BannerExecutor.swift
+@@ -34,7 +34,11 @@ class BannerExecutor: NSObject, BannerViewDelegate {
+                 bannerSize = AdSizeMediumRectangle
+                 break
+             case "SMART_BANNER":
+-                bannerSize = kGADAdSizeSmartBannerPortrait
++                let frame = { () -> CGRect in
++                    return rootViewController.view.frame.inset(by: rootViewController.view.safeAreaInsets)
++                }()
++                let viewWidth = frame.size.width
++                bannerSize = portraitAnchoredAdaptiveBanner(width: viewWidth)
+                 break
+             default: // ADAPTIVE_BANNER
+                 let frame = { () -> CGRect in
