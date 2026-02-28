@@ -8,7 +8,7 @@ import useAdsConfig from '@/hooks/useAdsConfig';
 import useDailySportsEvents from '@/hooks/useDailySportsEvents';
 import useChannelCatalog from '@/hooks/useChannelCatalog';
 import { getEventStatus } from '@/utils/sportsEvents';
-import { findBestChannelMatch } from '@/utils/channelLookup';
+import { findBestChannelMatches } from '@/utils/channelLookup';
 
 function formatDateTime(utcString) {
   const date = new Date(utcString);
@@ -39,10 +39,7 @@ export default function EventDetailsPage() {
     if (!event || !Array.isArray(event.channels)) {
       return [];
     }
-    return event.channels.map((name) => ({
-      name,
-      match: findBestChannelMatch(name, catalogChannels)
-    }));
+    return findBestChannelMatches(event.channels, catalogChannels, { minScore: 78 });
   }, [event, catalogChannels]);
 
   const status = event ? getEventStatus(event) : null;

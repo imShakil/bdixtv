@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 import useDailySportsEvents from '@/hooks/useDailySportsEvents';
-import { getEventStatus } from '@/utils/sportsEvents';
+import { getEventStatus, isPopularFootballEvent } from '@/utils/sportsEvents';
 
 const FILTERS = [
   { key: 'cricket', label: 'Cricket' },
@@ -53,6 +53,11 @@ export default function DailySportsEventsCarousel({
 
   const filteredEvents = useMemo(() => {
     const sportFiltered = events.filter((event) => matchesSportFilter(event, activeFilter));
+    if (activeFilter === 'football') {
+      const popularOnly = sportFiltered.filter((event) => isPopularFootballEvent(event));
+      const finalFootballEvents = popularOnly.length > 0 ? popularOnly : sportFiltered;
+      return finalFootballEvents.slice(0, limit);
+    }
     return sportFiltered.slice(0, limit);
   }, [activeFilter, events, limit]);
 

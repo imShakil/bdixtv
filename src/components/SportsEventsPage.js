@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useDailySportsEvents from '@/hooks/useDailySportsEvents';
 import { getEventStatus } from '@/utils/sportsEvents';
 
@@ -32,20 +32,73 @@ function formatDateTime(utcString) {
 }
 
 export default function SportsEventsPage() {
+  const PAGE_SIZE = 24;
   const [activeFilter, setActiveFilter] = useState('all');
+  const [query, setQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const loadMoreRef = useRef(null);
   const { events, isLoading } = useDailySportsEvents({ internationalOnly: false });
-  const filteredEvents = useMemo(
-    () => events.filter((event) => matchesSportFilter(event, activeFilter)),
-    [activeFilter, events]
+  const filteredEvents = useMemo(() => {
+    const normalizedQuery = query.toLowerCase().trim();
+    return events.filter((event) => {
+      if (!matchesSportFilter(event, activeFilter)) {
+        return false;
+      }
+      if (!normalizedQuery) {
+        return true;
+      }
+      const searchableText = [
+        event?.league,
+        event?.homeTeam,
+        event?.awayTeam,
+        event?.sport
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return searchableText.includes(normalizedQuery);
+    });
+  }, [activeFilter, events, query]);
+
+  const visibleEvents = useMemo(
+    () => filteredEvents.slice(0, visibleCount),
+    [filteredEvents, visibleCount]
   );
+  const canLoadMore = visibleEvents.length < filteredEvents.length;
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [activeFilter, query, PAGE_SIZE]);
+
+  useEffect(() => {
+    if (!canLoadMore || isLoading || !loadMoreRef.current) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setVisibleCount((value) => value + PAGE_SIZE);
+        }
+      },
+      { rootMargin: '250px 0px' }
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [canLoadMore, isLoading, PAGE_SIZE]);
 
   return (
     <main className="space-y-4">
       <section className="space-y-3 rounded-2xl border border-steel/20 bg-white/90 p-4 shadow-card">
         <div className="space-y-1">
           <h1 className="text-2xl font-extrabold tracking-tight text-ink md:text-3xl">Daily Events Schedule</h1>
+          <p className="text-xs font-semibold text-steel md:text-sm">
+            Total events: {events.length}
+            {filteredEvents.length !== events.length ? ` · Showing: ${filteredEvents.length}` : ''}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {FILTERS.map((filter) => (
             <button
               key={filter.key}
@@ -61,6 +114,14 @@ export default function SportsEventsPage() {
             </button>
           ))}
         </div>
+        <div>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search events, teams, league..."
+            className="w-full rounded-lg border border-steel/20 bg-white px-3 py-2.5 text-sm text-ink outline-none"
+          />
+        </div>
       </section>
 
       {isLoading ? (
@@ -70,7 +131,7 @@ export default function SportsEventsPage() {
       ) : null}
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {filteredEvents.map((event) => {
+        {visibleEvents.map((event) => {
           const status = getEventStatus(event);
           const statusText = status === 'live' ? 'Live' : status === 'finished' ? 'FT' : 'Upcoming';
           const statusClass = status === 'live'
@@ -114,6 +175,17 @@ export default function SportsEventsPage() {
           </article>
         ) : null}
       </section>
+
+      {!isLoading && canLoadMore ? (
+        <section className="flex justify-center">
+          <div
+            ref={loadMoreRef}
+            className="rounded-lg border border-steel/20 bg-white px-4 py-2 text-sm font-semibold text-steel"
+          >
+            Loading more events...
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

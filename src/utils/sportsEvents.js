@@ -30,6 +30,46 @@ const INTERNATIONAL_EVENT_KEYWORDS = [
   'test championship'
 ];
 
+const POPULAR_FOOTBALL_KEYWORDS = [
+  'fifa',
+  'uefa',
+  'afc',
+  'conmebol',
+  'concacaf',
+  'world cup',
+  'club world cup',
+  'euro',
+  'copa america',
+  'nations league',
+  'champions league',
+  'europa league',
+  'conference league',
+  'premier league',
+  'la liga',
+  'bundesliga',
+  'serie a',
+  'ligue 1',
+  'eredi',
+  'primeira liga',
+  'fa cup',
+  'efl cup',
+  'copa del rey',
+  'super cup',
+  'mls',
+  'saudi pro league',
+  'inter miami',
+  'el clasico',
+  'manchester',
+  'liverpool',
+  'arsenal',
+  'chelsea',
+  'barcelona',
+  'real madrid',
+  'bayern',
+  'juventus',
+  'psg'
+];
+
 function addHours(date, hours) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000);
 }
@@ -85,6 +125,24 @@ export function filterInternationalSportsEvents(events) {
 
     return INTERNATIONAL_EVENT_KEYWORDS.some((keyword) => searchableText.includes(keyword));
   });
+}
+
+export function isPopularFootballEvent(event) {
+  const sport = String(event?.sport || '').toLowerCase();
+  if (sport !== 'football' && sport !== 'soccer') {
+    return false;
+  }
+
+  const searchableText = [
+    event?.league,
+    event?.homeTeam,
+    event?.awayTeam
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return POPULAR_FOOTBALL_KEYWORDS.some((keyword) => searchableText.includes(keyword));
 }
 
 export function getEventStatus(event, now = new Date()) {
