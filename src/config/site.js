@@ -20,3 +20,8 @@ export const WORLD_PAGE_METADATA = {
   title: 'World TV | BDIX IPTV',
   description: 'Browse global IPTV channels loaded from the public playlist.'
 };
+
+export const EVENTS_PAGE_METADATA = {
+  title: 'Daily Sports Events | BDIX IPTV',
+  description: 'Track today\'s cricket and football event schedule in your local timezone.'
+};

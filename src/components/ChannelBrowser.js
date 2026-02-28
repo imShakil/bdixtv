@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ChannelGrid from '@/components/ChannelGrid';
 import ChannelFiltersBar from '@/components/ChannelFiltersBar';
 import HeroHeader from '@/components/HeroHeader';
+import DailySportsEventsCarousel from '@/components/DailySportsEventsCarousel';
 import PaginationFooter from '@/components/PaginationFooter';
 import VideoPlayer from '@/components/VideoPlayer';
 import PlayerWithSidebar from '@/components/PlayerWithSidebar';
@@ -18,7 +19,8 @@ export default function ChannelBrowser({
   channels,
   adsConfig,
   eyebrow,
-  title
+  title,
+  showDailyEvents = false
 }) {
   const [selectedChannel, setSelectedChannel] = useState(channels[0] || null);
   const [autoplay, setAutoplay] = useState(true);
@@ -94,11 +96,15 @@ export default function ChannelBrowser({
     <div className="space-y-5 md:space-y-7">
 
       <section className="space-y-3 md:space-y-4">
-        <HeroHeader
-          totalCount={channels.length}
-          eyebrow={eyebrow}
-          title={title}
-        />
+        {showDailyEvents ? (
+          <DailySportsEventsCarousel limit={8} />
+        ) : (
+          <HeroHeader
+            totalCount={channels.length}
+            eyebrow={eyebrow}
+            title={title}
+          />
+        )}
 
         {/* Ad Slot 1: Header Banner */}
         {showAds && adsConfig?.slots?.header?.enabled && <AdSlot slot="header" adsConfig={adsConfig} />}

@@ -6,6 +6,7 @@ import { SITE_BRANDING } from '@/config/site';
 
 const MENU_ITEMS = [
   { label: 'Home', href: '/' },
+  { label: 'Events', href: '/events' },
   { label: 'Featuring', href: '/featuring' },
   { label: 'World IPTV', href: '/world' },
   { label: 'IPTV Player', href: '/play' }

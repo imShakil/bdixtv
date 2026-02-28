@@ -35,7 +35,11 @@ export default function ChannelApp() {
 
   return (
     <main>
-      <ChannelBrowser channels={channels} adsConfig={adsConfig} />
+      <ChannelBrowser
+        channels={channels}
+        adsConfig={adsConfig}
+        showDailyEvents
+      />
     </main>
   );
 }
