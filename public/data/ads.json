@@ -9,8 +9,7 @@
           "key": "f5b3dd31223867445ffbc26d9c3d0f27",
           "format": "iframe",
           "width": 728,
-          "height": 90,
-          "hideOnMobile": true
+          "height": 90
         },
         "eventBottom": {
           "enabled": true,
@@ -30,8 +29,7 @@
           "key": "a3733e34f2a77d008f3e7aae0d74c258",
           "format": "iframe",
           "width": 728,
-          "height": 90,
-          "hideOnMobile": true
+          "height": 90
         },
         "eventBottom": {
           "enabled": true,

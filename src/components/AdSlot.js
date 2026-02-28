@@ -22,28 +22,37 @@ export default function AdSlot({ slot, adsConfig, className = '' }) {
         return undefined;
       }
 
-      container.innerHTML = '';
+      let isCancelled = false;
 
-      const setupScript = document.createElement('script');
-      setupScript.type = 'text/javascript';
-      setupScript.text = `
-        atOptions = {
-          key: '${key}',
-          format: '${slotConfig.format || 'iframe'}',
-          height: ${Number(slotConfig.height || 90)},
-          width: ${Number(slotConfig.width || 728)},
-          params: {}
-        };
-      `;
-      container.appendChild(setupScript);
+      const win = window;
+      win.__adsterraQueue = (win.__adsterraQueue || Promise.resolve()).then(() => (
+        new Promise((resolve) => {
+          if (isCancelled) {
+            resolve();
+            return;
+          }
 
-      const invokeScript = document.createElement('script');
-      invokeScript.type = 'text/javascript';
-      invokeScript.src = slotConfig.src || `https://ceasepancreas.com/${key}/invoke.js`;
-      invokeScript.async = false;
-      container.appendChild(invokeScript);
+          container.innerHTML = '';
+          win.atOptions = {
+            key,
+            format: slotConfig.format || 'iframe',
+            height: Number(slotConfig.height || 90),
+            width: Number(slotConfig.width || 728),
+            params: {}
+          };
+
+          const invokeScript = document.createElement('script');
+          invokeScript.type = 'text/javascript';
+          invokeScript.src = slotConfig.src || `https://ceasepancreas.com/${key}/invoke.js`;
+          invokeScript.async = true;
+          invokeScript.onload = () => resolve();
+          invokeScript.onerror = () => resolve();
+          container.appendChild(invokeScript);
+        })
+      ));
 
       return () => {
+        isCancelled = true;
         container.innerHTML = '';
       };
     }
