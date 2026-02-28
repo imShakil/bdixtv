@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -121,7 +119,7 @@ main {
 .lsp-card {
   position: relative;
   overflow: hidden;
-  font-family: 'Syne', sans-serif;
+  font-family: "IBM Plex Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   border-radius: 12px;
   border: 1px solid rgba(0, 210, 255, 0.18);
   background: linear-gradient(145deg, #0c1520 0%, #0a1018 60%, #0c1a24 100%);
@@ -195,7 +193,7 @@ main {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-family: 'Space Mono', monospace;
+  font-family: "SF Mono", "Roboto Mono", "Menlo", "Monaco", monospace;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -252,7 +250,7 @@ main {
 .lsp-connecting-sub {
   margin: 0 0 28px;
   font-size: 12px;
-  font-family: 'Space Mono', monospace;
+  font-family: "SF Mono", "Roboto Mono", "Menlo", "Monaco", monospace;
   color: rgba(0, 210, 255, 0.55);
   letter-spacing: 0.04em;
 }
