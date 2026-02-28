@@ -33,8 +33,7 @@ function formatDateTime(utcString) {
 
 export default function SportsEventsPage() {
   const [activeFilter, setActiveFilter] = useState('all');
-  const { events, isLoading, source, error } = useDailySportsEvents({ internationalOnly: false });
-
+  const { events, isLoading } = useDailySportsEvents({ internationalOnly: false });
   const filteredEvents = useMemo(
     () => events.filter((event) => matchesSportFilter(event, activeFilter)),
     [activeFilter, events]
@@ -44,19 +43,8 @@ export default function SportsEventsPage() {
     <main className="space-y-4">
       <section className="space-y-3 rounded-2xl border border-steel/20 bg-white/90 p-4 shadow-card">
         <div className="space-y-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel/80">Daily Schedule</p>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink md:text-3xl">Cricket & Football Events</h1>
-          <p className="text-sm text-steel">
-            Local timezone. {source === 'unavailable' ? 'Live API unavailable.' : 'Loaded from live events API.'}
-          </p>
-          {source === 'unavailable' && error ? (
-            <p className="text-xs text-rose-700">
-              Fetch error: {error}. If the URL opens in browser but fails here, add
-              {' '}`Access-Control-Allow-Origin: *` on the worker response.
-            </p>
-          ) : null}
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink md:text-3xl">Daily Events Schedule</h1>
         </div>
-
         <div className="flex items-center gap-2">
           {FILTERS.map((filter) => (
             <button

@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { AlertTriangle, ExternalLink, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ExternalLink } from 'lucide-react';
 import { isLikelyM3uSource, normalizeIframeSource } from '@/utils/sourceUtils';
 import { logEvent } from '@/utils/telemetry';
 
@@ -41,12 +41,7 @@ function classifyPlayerError({ code = null, status = null, message = '' } = {}) 
     normalized.includes('region') ||
     normalized.includes('country')
   ) {
-    return {
-      key: 'region',
-      title: 'Region or access blocked',
-      hint: 'This channel may be geo-restricted or requires permission from the source.',
-      emoji: '🌍'
-    };
+    return 'region';
   }
 
   if (
@@ -56,12 +51,7 @@ function classifyPlayerError({ code = null, status = null, message = '' } = {}) 
     normalized.includes('dead') ||
     normalized.includes('manifestloaderror')
   ) {
-    return {
-      key: 'broken',
-      title: 'Broken stream link',
-      hint: 'The stream URL looks expired, moved, or no longer available.',
-      emoji: '🧩'
-    };
+    return 'broken';
   }
 
   if (
@@ -71,12 +61,7 @@ function classifyPlayerError({ code = null, status = null, message = '' } = {}) 
     normalized.includes('fragloaderror') ||
     normalized.includes('levelloaderror')
   ) {
-    return {
-      key: 'network',
-      title: 'Network hiccup',
-      hint: 'Connection to the source dropped while loading the stream.',
-      emoji: '📶'
-    };
+    return 'network';
   }
 
   if (
@@ -86,12 +71,7 @@ function classifyPlayerError({ code = null, status = null, message = '' } = {}) 
     normalized.includes('demux') ||
     normalized.includes('codec')
   ) {
-    return {
-      key: 'unsupported',
-      title: 'Format not supported',
-      hint: 'This source may use a codec or transport your browser cannot play.',
-      emoji: '🧪'
-    };
+    return 'unsupported';
   }
 
   if (
@@ -100,20 +80,10 @@ function classifyPlayerError({ code = null, status = null, message = '' } = {}) 
     normalized.includes('cross-origin') ||
     normalized.includes('blocked')
   ) {
-    return {
-      key: 'blocked',
-      title: 'Blocked by browser policy',
-      hint: 'The source rejected cross-site playback or mixed-content streaming.',
-      emoji: '🛡️'
-    };
+    return 'blocked';
   }
 
-  return {
-    key: 'unknown',
-    title: 'Playback failed',
-    hint: 'The channel is currently unavailable. Try retrying or switching channels.',
-    emoji: '📺'
-  };
+  return 'unknown';
 }
 
 function buildNativeError(event) {
@@ -172,46 +142,7 @@ function MixedContentWarning({ httpPlayerUrl }) {
   );
 }
 
-function PlayerErrorCard({ channel, info, onRetry }) {
-  const meta = classifyPlayerError(info);
-
-  return (
-    <div className="absolute inset-0 z-30 flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950/80 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-cyan-300/30 bg-slate-900/90 p-5 text-slate-100 shadow-2xl backdrop-blur-sm">
-        <div className="mb-3 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-300/35 bg-cyan-400/10 text-2xl">
-            {meta.emoji}
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.12em] text-cyan-200/75">Channel interrupted</p>
-            <h3 className="text-lg font-bold leading-tight">{meta.title}</h3>
-          </div>
-        </div>
-
-        <p className="text-sm text-cyan-100/85">{meta.hint}</p>
-        <p className="mt-1 text-xs text-slate-300/80">
-          {channel?.name ? `${channel.name} took a quick snack break.` : 'This stream took a quick snack break.'}
-        </p>
-
-        <div className="mt-5 flex items-center justify-center">
-          <button
-            type="button"
-            onClick={onRetry}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-300/45 bg-cyan-500/15 px-3 py-2 text-xs font-semibold text-cyan-100 hover:bg-cyan-500/25"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Retry stream
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function VideoPlayer({ channel, autoplay }) {
-  const [playerError, setPlayerError] = useState(null);
-  const [playerNonce, setPlayerNonce] = useState(0);
-
   const isMobile = useMemo(() => {
     if (typeof navigator === 'undefined') {
       return false;
@@ -244,24 +175,13 @@ export default function VideoPlayer({ channel, autoplay }) {
     }
   }, [channel]);
 
-  useEffect(() => {
-    setPlayerError(null);
-    setPlayerNonce(0);
-  }, [channel?.source, channel?.type]);
-
-  const handleRetry = () => {
-    setPlayerError(null);
-    setPlayerNonce(value => value + 1);
-  };
-
   const handlePlayerError = (payload) => {
-    const classified = classifyPlayerError(payload);
-    setPlayerError(payload);
+    const reason = classifyPlayerError(payload);
     logEvent('player_error', {
       name: channel?.name,
       type: channel?.type,
       mobile: isMobile,
-      reason: classified.key,
+      reason,
       status: payload?.status || undefined,
       code: payload?.code || undefined,
       message: payload?.message || undefined
@@ -318,10 +238,9 @@ export default function VideoPlayer({ channel, autoplay }) {
     return (
       <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-black shadow-card ring-1 ring-black/5">
         {insecureStream ? <MixedContentWarning httpPlayerUrl={httpPlayerUrl} /> : null}
-        {playerError ? <PlayerErrorCard channel={channel} info={playerError} onRetry={handleRetry} /> : null}
         <div className="aspect-video md:aspect-[16/9]">
           <video
-            key={`native-${channel.source}-${playerNonce}`}
+            key={`native-${channel.source}`}
             src={channel.source}
             controls
             autoPlay={Boolean(autoplay)}
@@ -330,7 +249,6 @@ export default function VideoPlayer({ channel, autoplay }) {
             preload="metadata"
             className="h-full w-full"
             onPlay={() => {
-              setPlayerError(null);
               logEvent('player_play', { name: channel.name, type: 'native' });
             }}
             onError={(event) => {
@@ -345,16 +263,14 @@ export default function VideoPlayer({ channel, autoplay }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-black shadow-card ring-1 ring-black/5">
       {insecureStream ? <MixedContentWarning httpPlayerUrl={httpPlayerUrl} /> : null}
-      {playerError ? <PlayerErrorCard channel={channel} info={playerError} onRetry={handleRetry} /> : null}
       <div className="aspect-video md:aspect-[16/9]">
         <ReactPlayer
-          key={`react-${channel.source}-${playerNonce}`}
+          key={`react-${channel.source}`}
           url={channel.source}
           controls
           playing={Boolean(autoplay)}
           muted={Boolean(autoplay)}
           onPlay={() => {
-            setPlayerError(null);
             logEvent('player_play', { name: channel.name, type: channel.type });
           }}
           onError={(error) => {

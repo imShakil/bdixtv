@@ -108,7 +108,7 @@ export default function EventDetailsPage() {
                         Play
                       </Link>
                     ) : (
-                      <span className="text-xs text-steel/70">No mapped stream yet</span>
+                      <span className="text-xs text-steel/70">NA</span>
                     )}
                   </li>
                 ))}

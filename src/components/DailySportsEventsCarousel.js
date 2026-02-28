@@ -6,15 +6,11 @@ import useDailySportsEvents from '@/hooks/useDailySportsEvents';
 import { getEventStatus } from '@/utils/sportsEvents';
 
 const FILTERS = [
-  { key: 'all', label: 'All' },
   { key: 'cricket', label: 'Cricket' },
   { key: 'football', label: 'Football' }
 ];
 
 function matchesSportFilter(event, activeFilter) {
-  if (activeFilter === 'all') {
-    return true;
-  }
   const sport = String(event?.sport || '').toLowerCase();
   if (activeFilter === 'football') {
     return sport === 'football' || sport === 'soccer';
@@ -51,7 +47,7 @@ function formatStatus(event, now = new Date()) {
 export default function DailySportsEventsCarousel({
   limit = 8
 }) {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState('cricket');
   const trackRef = useRef(null);
   const { events, isLoading, source } = useDailySportsEvents();
 
@@ -76,11 +72,7 @@ export default function DailySportsEventsCarousel({
     <section className="space-y-3 rounded-2xl border border-steel/20 bg-white/90 p-3.5 shadow-card md:p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel/80">Today</p>
-          <h1 className="text-xl font-extrabold tracking-tight text-ink md:text-2xl">Cricket & Football Events</h1>
-          <p className="text-[11px] text-steel/80">
-            {source === 'unavailable' ? 'Live events API unavailable' : 'Updated from live events API'}
-          </p>
+          <h1 className="text-xl font-extrabold tracking-tight text-ink md:text-2xl">Today's Events</h1>
         </div>
         <Link
           href="/events"
