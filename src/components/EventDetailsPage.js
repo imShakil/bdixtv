@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import useDailySportsEvents from '@/hooks/useDailySportsEvents';
+import useChannelCatalog from '@/hooks/useChannelCatalog';
 import { getEventStatus } from '@/utils/sportsEvents';
+import { findBestChannelMatch } from '@/utils/channelLookup';
 
 function formatDateTime(utcString) {
   const date = new Date(utcString);
@@ -23,11 +25,21 @@ export default function EventDetailsPage() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get('id') || '';
   const { events, isLoading, source, error } = useDailySportsEvents({ internationalOnly: false });
+  const { channels: catalogChannels } = useChannelCatalog();
 
   const event = useMemo(
     () => events.find((entry) => String(entry.id) === eventId),
     [eventId, events]
   );
+  const channelMatches = useMemo(() => {
+    if (!event || !Array.isArray(event.channels)) {
+      return [];
+    }
+    return event.channels.map((name) => ({
+      name,
+      match: findBestChannelMatch(name, catalogChannels)
+    }));
+  }, [event, catalogChannels]);
 
   const status = event ? getEventStatus(event) : null;
   const statusText = status === 'live' ? 'Live' : status === 'finished' ? 'Finished' : 'Upcoming';
@@ -80,10 +92,25 @@ export default function EventDetailsPage() {
 
           <div className="space-y-2">
             <h2 className="text-sm font-bold uppercase tracking-[0.08em] text-ink">Channels</h2>
-            {Array.isArray(event.channels) && event.channels.length > 0 ? (
-              <ul className="list-disc space-y-1 pl-5 text-sm text-steel">
-                {event.channels.map((channel) => (
-                  <li key={`${event.id}-${channel}`}>{channel}</li>
+            {channelMatches.length > 0 ? (
+              <ul className="space-y-2 text-sm text-steel">
+                {channelMatches.map(({ name, match }) => (
+                  <li
+                    key={`${event.id}-${name}`}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-steel/15 bg-white/80 px-3 py-2"
+                  >
+                    <span>{name}</span>
+                    {match ? (
+                      <Link
+                        href={`/play?url=${encodeURIComponent(match.source)}&type=${encodeURIComponent(match.type || 'auto')}&name=${encodeURIComponent(match.name)}`}
+                        className="rounded-full border border-sea/30 bg-sea/10 px-2.5 py-1 text-xs font-semibold text-sea hover:bg-sea/15"
+                      >
+                        Play
+                      </Link>
+                    ) : (
+                      <span className="text-xs text-steel/70">No mapped stream yet</span>
+                    )}
+                  </li>
                 ))}
               </ul>
             ) : (
