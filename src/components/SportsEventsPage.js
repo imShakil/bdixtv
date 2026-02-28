@@ -96,6 +96,14 @@ export default function SportsEventsPage() {
               <p className="text-xs text-steel">vs</p>
               <p className="text-sm font-semibold text-ink">{event.awayTeam}</p>
               <p className="text-xs text-steel">{formatDateTime(event.startTimeUtc)}</p>
+              {Array.isArray(event.channels) && event.channels.length > 0 ? (
+                <p className="text-xs text-steel">
+                  Channels: {event.channels.slice(0, 3).join(', ')}
+                  {event.channels.length > 3 ? ` +${event.channels.length - 3} more` : ''}
+                </p>
+              ) : (
+                <p className="text-xs text-steel/70">Channels: TBA</p>
+              )}
             </article>
           );
         })}

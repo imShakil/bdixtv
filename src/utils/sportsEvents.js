@@ -3,6 +3,8 @@ const INTERNATIONAL_EVENT_KEYWORDS = [
   'football',
   'soccer',
   'fifa',
+  'fifa friendly',
+  'fifa friendly match',
   'olympic',
   'world cup',
   'icc',
@@ -13,6 +15,16 @@ const INTERNATIONAL_EVENT_KEYWORDS = [
   'copa',
   'euro',
   'nations league',
+  'premier league',
+  'la liga',
+  'bundesliga',
+  'serie a',
+  'ligue 1',
+  'champions league',
+  'europa league',
+  'conference league',
+  'mls',
+  'saudi pro league',
   't20',
   'odi',
   'test championship'
@@ -35,6 +47,9 @@ export function readGeneratedSportsEvents(payload) {
         event?.startTimeUtc ?? event?.start_time_utc ?? event?.startTime ?? event?.dateTimeUtc ?? ''
       ).trim();
       const id = String(event?.id ?? event?.eventId ?? `${sport}-${league}-${index}`).trim();
+      const channels = Array.isArray(event?.channels)
+        ? event.channels.map((channel) => String(channel).trim()).filter(Boolean)
+        : [];
 
       return {
         id,
@@ -42,7 +57,8 @@ export function readGeneratedSportsEvents(payload) {
         league,
         homeTeam,
         awayTeam,
-        startTimeUtc
+        startTimeUtc,
+        channels
       };
     })
     .filter((event) => (

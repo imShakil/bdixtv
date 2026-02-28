@@ -149,6 +149,14 @@ export default function DailySportsEventsCarousel({
               <p className="text-xs font-medium text-steel">vs</p>
               <p className="text-sm font-semibold text-ink">{event.awayTeam}</p>
               <p className="pt-2 text-xs text-steel">{formatTime(event.startTimeUtc)}</p>
+              {Array.isArray(event.channels) && event.channels.length > 0 ? (
+                <p className="text-xs text-steel">
+                  {event.channels.slice(0, 2).join(', ')}
+                  {event.channels.length > 2 ? ` +${event.channels.length - 2}` : ''}
+                </p>
+              ) : (
+                <p className="text-xs text-steel/70">Channels: TBA</p>
+              )}
             </article>
           );
         })}
