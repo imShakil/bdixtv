@@ -8,12 +8,41 @@ function normalize(value) {
 function canonicalize(value) {
   return normalize(value)
     .replace(/\bsuper\s+sports?\b/g, 'supersport')
+    .replace(/\bastro\s+supersport\b/g, 'supersport')
+    .replace(/\bsky\s+sport\b/g, 'sky sports')
     .replace(/\bsky\s+sports?\b/g, 'sky sports')
+    .replace(/\bss\s+cricket\b/g, 'supersport cricket')
     .replace(/\bbein\s+sports?\b/g, 'beinsports')
+    .replace(/\bbe\s+in\s+sports?\b/g, 'beinsports')
+    .replace(/\bbt\s+sports?\b/g, 'tntsports')
+    .replace(/\btnt\s+sports?\b/g, 'tntsports')
     .replace(/\bptv\s+sports?\b/g, 'ptvsports')
     .replace(/\bsony\s+sports?\b/g, 'sonysports')
     .replace(/\bten\s+sports?\b/g, 'tensports')
     .replace(/\bstar\s+sports?\b/g, 'starsports')
+    .replace(/\bstar\s+sports?\s+1\b/g, 'starsports 1')
+    .replace(/\bstar\s+sports?\s+2\b/g, 'starsports 2')
+    .replace(/\bsports?\s+18\b/g, 'sports18')
+    .replace(/\bsony\s+ten\b/g, 'sonyten')
+    .replace(/\bten\s+1\b/g, 'sonyten 1')
+    .replace(/\bten\s+2\b/g, 'sonyten 2')
+    .replace(/\bten\s+3\b/g, 'sonyten 3')
+    .replace(/\bten\s+4\b/g, 'sonyten 4')
+    .replace(/\bsony\s+liv\b/g, 'sonyliv')
+    .replace(/\bjiocinema\b/g, 'jiocinema')
+    .replace(/\bdd\s+sports?\b/g, 'ddsports')
+    .replace(/\bptc\s+sports?\b/g, 'ptcsports')
+    .replace(/\bt\s*sports?\b/g, 'tsportsbd')
+    .replace(/\bgazi\s+tv\b/g, 'gtv')
+    .replace(/\bghazi\s+tv\b/g, 'gtv')
+    .replace(/\bfox\s+sports?\b/g, 'foxsports')
+    .replace(/\bcbs\s+sports?\b/g, 'cbssports')
+    .replace(/\bnbc\s+sports?\b/g, 'nbcsports')
+    .replace(/\beuro\s+sports?\b/g, 'eurosport')
+    .replace(/\bpremier\s+sports?\b/g, 'premiersports')
+    .replace(/\bviaplay\s+sports?\b/g, 'viaplaysports')
+    .replace(/\bosn\s+sports?\b/g, 'osnsports')
+    .replace(/\btrue\s+sports?\b/g, 'truesports')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -31,7 +60,25 @@ const BRAND_PATTERNS = [
   'espn',
   'tensports',
   'ptvsports',
-  'beinsports'
+  'beinsports',
+  'tntsports',
+  'foxsports',
+  'cbssports',
+  'nbcsports',
+  'eurosport',
+  'premiersports',
+  'viaplaysports',
+  'osnsports',
+  'truesports',
+  'dazn',
+  'tsn',
+  'sports18',
+  'sonyten',
+  'sonyliv',
+  'jiocinema',
+  'ddsports',
+  'ptcsports',
+  'tsportsbd'
 ];
 
 const GENERIC_TOKENS = new Set([
