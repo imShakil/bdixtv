@@ -42,6 +42,15 @@ export default function RootLayout({ children }) {
         `}</script>
         <script>{`
           (function () {
+            var cap = window.Capacitor;
+            var isNative = !!(cap && (
+              (typeof cap.isNativePlatform === 'function' && cap.isNativePlatform()) ||
+              (typeof cap.getPlatform === 'function' && cap.getPlatform() !== 'web') ||
+              cap.platform === 'android' ||
+              cap.platform === 'ios'
+            ));
+            if (isNative) return;
+
             var host = window.location.hostname;
             var adScriptByHost = {
               'bdixtv.mhosen.com': 'https://ceasepancreas.com/c7/21/73/c721736c340f6ebd2f5dc866ecf0d945.js',

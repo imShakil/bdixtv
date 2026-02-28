@@ -3,12 +3,17 @@
 import VideoPlayer from '@/components/VideoPlayer';
 import AdSlot from '@/components/AdSlot';
 import LiveVisitorCount from '@/components/LiveVisitorCount';
+import { Capacitor } from '@capacitor/core';
 
 export default function PlayerWithSidebar({
   selectedChannel,
   autoplay,
   showAds = false,
   adsConfig = null,
+  showRewardedCta = false,
+  rewardedCtaLabel = 'Watch ad for ad-free time',
+  onRewardedCtaClick,
+  isRewardedCtaLoading = false,
   emptyTitle = 'No channel selected',
   emptySubtitle = 'Select a channel from the list below.',
   getMetaText
@@ -16,6 +21,7 @@ export default function PlayerWithSidebar({
   const metaText = selectedChannel
     ? (getMetaText?.(selectedChannel) || '')
     : emptySubtitle;
+  const isNativeRuntime = Capacitor.getPlatform() !== 'web';
 
   return (
     <div className="grid gap-3 md:gap-4 lg:grid-cols-[minmax(0,2.3fr)_minmax(0,1fr)] lg:grid-rows-[1fr]">
@@ -50,30 +56,42 @@ export default function PlayerWithSidebar({
             <p className="truncate text-xs text-steel">
               {metaText}
             </p>
+            {showRewardedCta ? (
+              <button
+                type="button"
+                onClick={onRewardedCtaClick}
+                disabled={isRewardedCtaLoading}
+                className="mt-2 inline-flex items-center rounded-full bg-ink px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-steel disabled:opacity-70"
+              >
+                {isRewardedCtaLoading ? 'Loading ad...' : rewardedCtaLabel}
+              </button>
+            ) : null}
           </div>
           {showAds && adsConfig?.slots?.sidebar?.enabled ? (
             <AdSlot slot="sidebar" adsConfig={adsConfig} className="min-w-0 w-full overflow-hidden rounded-lg" />
           ) : null}
 
-          <div className="w-full min-w-0 overflow-hidden shrink-0">
-            <a
-              href="https://beta.publishers.adsterra.com/referral/1XU1UuDLQw"
-              rel="nofollow sponsored noopener noreferrer"
-              target="_blank"
-              aria-label="Visit Adsterra referral partner page"
-              className="mx-auto block w-full"
-            >
-              <img
-                alt="Adsterra sponsored referral banner"
-                src="https://landings-cdn.adsterratech.com/referralBanners/png/600%20x%20250%20px.png"
-                width="600"
-                height="250"
-                loading="lazy"
-                decoding="async"
-                className="h-auto w-full rounded-lg shadow-sm ring-1 ring-black/5"
-              />
-            </a>
-          </div>
+          {!isNativeRuntime ? (
+            <div className="w-full min-w-0 overflow-hidden shrink-0">
+              <a
+                href="https://beta.publishers.adsterra.com/referral/1XU1UuDLQw"
+                rel="nofollow sponsored noopener noreferrer"
+                target="_blank"
+                aria-label="Visit Adsterra referral partner page"
+                className="mx-auto block w-full"
+              >
+                <img
+                  alt="Adsterra sponsored referral banner"
+                  src="https://landings-cdn.adsterratech.com/referralBanners/png/600%20x%20250%20px.png"
+                  width="600"
+                  height="250"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-auto w-full rounded-lg shadow-sm ring-1 ring-black/5"
+                />
+              </a>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

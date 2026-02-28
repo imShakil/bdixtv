@@ -9,6 +9,7 @@ import VideoPlayer from '@/components/VideoPlayer';
 import PlayerWithSidebar from '@/components/PlayerWithSidebar';
 import AdSlot from '@/components/AdSlot';
 import useChannelFilteringPagination from '@/hooks/useChannelFilteringPagination';
+import useNativeAdActions from '@/hooks/useNativeAdActions';
 import { logEvent } from '@/utils/telemetry';
 import { getHotChannels } from '@/utils/hotChannels';
 
@@ -23,6 +24,13 @@ export default function ChannelBrowser({
   const [autoplay, setAutoplay] = useState(true);
   const [isSticky, setIsSticky] = useState(false);
   const [showStickyPlayer, setShowStickyPlayer] = useState(true);
+  const {
+    maybeShowInterstitial,
+    showRewarded,
+    rewardedEnabled,
+    rewardedLabel,
+    isRewardedLoading
+  } = useNativeAdActions(adsConfig);
 
   const showAds = adsConfig?.enabled || false;
   const hotChannels = useMemo(() => getHotChannels(channels), [channels]);
@@ -80,6 +88,7 @@ export default function ChannelBrowser({
       setShowStickyPlayer(true);
     }
     logEvent('channel_selected', { id: channel.id, name: channel.name, origin: channel.origin });
+    void maybeShowInterstitial('channelSwitch');
   };
 
   useEffect(() => {
@@ -106,6 +115,12 @@ export default function ChannelBrowser({
           autoplay={autoplay}
           showAds={showAds}
           adsConfig={adsConfig}
+          showRewardedCta={rewardedEnabled}
+          rewardedCtaLabel={rewardedLabel}
+          isRewardedCtaLoading={isRewardedLoading}
+          onRewardedCtaClick={() => {
+            void showRewarded('unlockStream');
+          }}
           getMetaText={(channel) => {
             const primary = channel.category || 'Uncategorized';
             return channel.language ? `${primary} · ${channel.language}` : primary;

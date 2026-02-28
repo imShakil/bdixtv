@@ -8,6 +8,7 @@ import ChannelGrid from '@/components/ChannelGrid';
 import AdSlot from '@/components/AdSlot';
 import useAdsConfig from '@/hooks/useAdsConfig';
 import useChannelFilteringPagination from '@/hooks/useChannelFilteringPagination';
+import useNativeAdActions from '@/hooks/useNativeAdActions';
 import { isHttpUrl, normalizeIframeSource } from '@/utils/sourceUtils';
 import { loadPlaylistChannelsFromUrl } from '@/utils/channels';
 import { logEvent } from '@/utils/telemetry';
@@ -59,6 +60,22 @@ function getQueryParam(search, key) {
   return '';
 }
 
+function isM3uPlaylistUrl(value) {
+  return /\.m3u([?#]|$)/i.test(value);
+}
+
+function isLikelyMediaSegmentUrl(value) {
+  return /\.(ts|m4s|mp4|m4a|aac|vtt|webvtt)([?#]|$)/i.test(value);
+}
+
+function isLikelyChannelPlaylist(parsedChannels) {
+  if (!Array.isArray(parsedChannels) || parsedChannels.length < 2) {
+    return false;
+  }
+
+  return parsedChannels.every((channel) => !isLikelyMediaSegmentUrl(channel?.source || ''));
+}
+
 export default function CustomUrlPlayerPage() {
   const [customUrl, setCustomUrl] = useState('');
   const [customType, setCustomType] = useState('auto');
@@ -69,6 +86,13 @@ export default function CustomUrlPlayerPage() {
   const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(false);
   const autoLoadKeyRef = useRef('');
   const adsConfig = useAdsConfig();
+  const {
+    maybeShowInterstitial,
+    showRewarded,
+    rewardedEnabled,
+    rewardedLabel,
+    isRewardedLoading
+  } = useNativeAdActions(adsConfig);
 
   const showAds = adsConfig?.enabled || false;
   const {
@@ -108,12 +132,16 @@ export default function CustomUrlPlayerPage() {
       return;
     }
 
-    if (resolvedType === 'm3u8') {
+    const shouldTryPlaylistParse =
+      resolvedType === 'm3u8' &&
+      (isM3uPlaylistUrl(value) || selectedType === 'm3u8');
+
+    if (shouldTryPlaylistParse) {
       setIsLoadingPlaylist(true);
       try {
         const parsedChannels = await loadPlaylistChannelsFromUrl(value);
 
-        if (parsedChannels.length > 0) {
+        if (isLikelyChannelPlaylist(parsedChannels)) {
           const nameMatch = name
             ? parsedChannels.find((channel) => channel.name?.trim() === name)
             : null;
@@ -151,7 +179,8 @@ export default function CustomUrlPlayerPage() {
 
     setCustomError('');
     logEvent('custom_url_played', { type: resolvedType });
-  }, [setCategory, setPage, setQuery]);
+    void maybeShowInterstitial('channelSwitch');
+  }, [maybeShowInterstitial, setCategory, setPage, setQuery]);
 
   const handlePlayCustomUrl = async () => {
     await playCustomUrl({
@@ -194,6 +223,7 @@ export default function CustomUrlPlayerPage() {
   const handleSelectPlaylistChannel = (channel) => {
     setSelectedChannel(channel);
     logEvent('custom_playlist_channel_selected', { id: channel.id, name: channel.name });
+    void maybeShowInterstitial('channelSwitch');
   };
 
   return (
@@ -240,6 +270,12 @@ export default function CustomUrlPlayerPage() {
             autoplay={Boolean(selectedChannel)}
             showAds={showAds}
             adsConfig={adsConfig}
+            showRewardedCta={rewardedEnabled}
+            rewardedCtaLabel={rewardedLabel}
+            isRewardedCtaLoading={isRewardedLoading}
+            onRewardedCtaClick={() => {
+              void showRewarded('unlockStream');
+            }}
             emptyTitle="No stream loaded"
             emptySubtitle="Enter a URL to start streaming."
             getMetaText={(channel) => `${channel.type.toUpperCase()} stream`}

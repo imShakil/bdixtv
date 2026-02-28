@@ -175,8 +175,14 @@ export default function VideoPlayer({ channel, autoplay }) {
     }
   }, [channel]);
 
+  const handlePlayerPlay = (typeLabel) => {
+    logEvent('player_play', { name: channel?.name, type: typeLabel });
+  };
+
   const handlePlayerError = (payload) => {
     const reason = classifyPlayerError(payload);
+    const message = payload?.message || 'Playback failed.';
+
     logEvent('player_error', {
       name: channel?.name,
       type: channel?.type,
@@ -184,7 +190,7 @@ export default function VideoPlayer({ channel, autoplay }) {
       reason,
       status: payload?.status || undefined,
       code: payload?.code || undefined,
-      message: payload?.message || undefined
+      message
     });
   };
 
@@ -216,7 +222,7 @@ export default function VideoPlayer({ channel, autoplay }) {
     }
 
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-black shadow-card ring-1 ring-black/5">
+      <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-slate-900 shadow-card ring-1 ring-black/5">
         {insecureStream ? <MixedContentWarning httpPlayerUrl={httpPlayerUrl} /> : null}
         <div className="aspect-video md:aspect-[16/9]">
           <iframe
@@ -236,7 +242,7 @@ export default function VideoPlayer({ channel, autoplay }) {
 
   if (useNativePlayer) {
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-black shadow-card ring-1 ring-black/5">
+      <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-slate-900 shadow-card ring-1 ring-black/5">
         {insecureStream ? <MixedContentWarning httpPlayerUrl={httpPlayerUrl} /> : null}
         <div className="aspect-video md:aspect-[16/9]">
           <video
@@ -247,9 +253,9 @@ export default function VideoPlayer({ channel, autoplay }) {
             playsInline
             muted
             preload="metadata"
-            className="h-full w-full"
+            className="h-full w-full bg-slate-900"
             onPlay={() => {
-              logEvent('player_play', { name: channel.name, type: 'native' });
+              handlePlayerPlay('native');
             }}
             onError={(event) => {
               handlePlayerError(buildNativeError(event));
@@ -261,7 +267,7 @@ export default function VideoPlayer({ channel, autoplay }) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-black shadow-card ring-1 ring-black/5">
+    <div className="relative overflow-hidden rounded-2xl border border-steel/20 bg-slate-900 shadow-card ring-1 ring-black/5">
       {insecureStream ? <MixedContentWarning httpPlayerUrl={httpPlayerUrl} /> : null}
       <div className="aspect-video md:aspect-[16/9]">
         <ReactPlayer
@@ -271,7 +277,7 @@ export default function VideoPlayer({ channel, autoplay }) {
           playing={Boolean(autoplay)}
           muted={Boolean(autoplay)}
           onPlay={() => {
-            logEvent('player_play', { name: channel.name, type: channel.type });
+            handlePlayerPlay(channel.type);
           }}
           onError={(error) => {
             const details = buildReactPlayerError(error);

@@ -8,6 +8,7 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 export default function useCachedChannelLoader({
   cacheKey,
   loadChannels,
+  cacheTtlMs = CACHE_TTL_MS,
   metricContext = {},
   logContext = {},
   getLoadedEventData
@@ -85,7 +86,7 @@ export default function useCachedChannelLoader({
           const parsed = JSON.parse(cached);
           const freshCache =
             typeof parsed.cachedAt === 'number' &&
-            Date.now() - parsed.cachedAt <= CACHE_TTL_MS;
+            Date.now() - parsed.cachedAt <= cacheTtlMs;
 
           if (Array.isArray(parsed.channels) && parsed.channels.length) {
             hasAnyCachedChannels = true;
@@ -116,7 +117,7 @@ export default function useCachedChannelLoader({
     }
 
     loadAllChannels({ background: false, preserveOnError: false });
-  }, [cacheKey, loadAllChannels, logContext]);
+  }, [cacheKey, cacheTtlMs, loadAllChannels, logContext]);
 
   return {
     status,

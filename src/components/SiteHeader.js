@@ -31,8 +31,8 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-steel/15 bg-white/75 backdrop-blur-md">
-      <nav className="mx-auto w-full max-w-[1440px] px-3 py-3 md:flex md:items-center md:justify-between md:gap-4 md:px-4 xl:px-5">
+    <header className="safe-area-top sticky top-0 z-40 border-b border-steel/15 bg-white/75 backdrop-blur-md">
+      <nav className="safe-area-x mx-auto w-full max-w-[1440px] px-3 py-3 md:flex md:items-center md:justify-between md:gap-4 md:px-4 xl:px-5">
         <div className="flex items-center justify-between gap-3">
           <a href="/" className="flex min-w-0 items-center gap-2">
             <img src="/icon.svg" alt="BDIX IPTV logo" className="h-7 w-7 shrink-0 rounded-lg border border-steel/20 md:h-8 md:w-8" />

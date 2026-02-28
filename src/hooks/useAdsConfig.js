@@ -22,6 +22,40 @@ function resolveHostAdsConfig(config, hostname) {
   };
 }
 
+function isNativeRuntime() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  const cap = window.Capacitor;
+  if (!cap) {
+    return false;
+  }
+  if (typeof cap.isNativePlatform === 'function') {
+    return cap.isNativePlatform();
+  }
+  return typeof cap.getPlatform === 'function' ? cap.getPlatform() !== 'web' : cap.platform !== 'web';
+}
+
+function resolvePlatformAdsConfig(config) {
+  if (!config || !isNativeRuntime()) {
+    return config;
+  }
+
+  const mobileConfig = config?.mobile;
+  if (!mobileConfig) {
+    return config;
+  }
+
+  return {
+    ...config,
+    ...mobileConfig,
+    slots: {
+      ...(config.slots || {}),
+      ...(mobileConfig.slots || {})
+    }
+  };
+}
+
 export default function useAdsConfig() {
   const [adsConfig, setAdsConfig] = useState(null);
 
@@ -30,7 +64,8 @@ export default function useAdsConfig() {
       .then((res) => res.json())
       .then((data) => {
         const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
-        setAdsConfig(resolveHostAdsConfig(data, hostname));
+        const hostMergedConfig = resolveHostAdsConfig(data, hostname);
+        setAdsConfig(resolvePlatformAdsConfig(hostMergedConfig));
       })
       .catch(() => setAdsConfig({ enabled: false }));
   }, []);
