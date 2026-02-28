@@ -1,10 +1,8 @@
 import { parseM3U8 } from '@/utils/m3u8Parser';
 import {
-  isHttpIpSource,
   isHttpUrl,
   isLikelyM3uSource,
-  normalizeIframeSource,
-  normalizeStreamSource
+  normalizeIframeSource
 } from '@/utils/sourceUtils';
 
 export const PLAYLIST_URL = process.env.NEXT_PUBLIC_PLAYLIST_URL || '';
@@ -33,13 +31,6 @@ function sanitizeChannel(channel, index, origin) {
   if (!source) {
     return null;
   }
-
-  // TODO: re-enable if you want to skip insecure url with IP address and replace http to https for domain name
-  // if (isHttpIpSource(source)) {
-  //   return null;
-  // }
-
-  // source = normalizeStreamSource(source);
 
   if (type === 'iframe') {
     source = normalizeIframeSource(source);

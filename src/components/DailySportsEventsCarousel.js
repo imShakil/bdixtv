@@ -49,7 +49,7 @@ export default function DailySportsEventsCarousel({
 }) {
   const [activeFilter, setActiveFilter] = useState('cricket');
   const trackRef = useRef(null);
-  const { events, isLoading, source } = useDailySportsEvents();
+  const { events, isLoading } = useDailySportsEvents();
 
   const filteredEvents = useMemo(() => {
     const sportFiltered = events.filter((event) => matchesSportFilter(event, activeFilter));
