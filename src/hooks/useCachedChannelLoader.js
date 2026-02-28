@@ -35,34 +35,48 @@ export default function useCachedChannelLoader({
     }
   }, [cacheKey]);
 
-  const loadAllChannels = useCallback(async (background = false) => {
+  const loadAllChannels = useCallback(async ({ background = false, preserveOnError = false } = {}) => {
     const startedAt = performance.now();
 
     if (!background) {
       setStatus('loading');
     }
 
-    const loadedChannels = await loadChannels();
+    try {
+      const loadedChannels = await loadChannels();
 
-    const elapsed = Math.round(performance.now() - startedAt);
-    recordMetric('channels_load_ms', elapsed, { background, ...metricContext });
+      const elapsed = Math.round(performance.now() - startedAt);
+      recordMetric('channels_load_ms', elapsed, { background, ...metricContext });
 
-    if (!loadedChannels.length) {
-      setStatus('error');
-      logEvent('channels_load_failed', { elapsed, ...logContext });
-      return;
+      if (!loadedChannels.length) {
+        if (!preserveOnError) {
+          setStatus('error');
+        }
+        logEvent('channels_load_failed', { elapsed, background, ...logContext });
+        return;
+      }
+
+      applyLoadedChannels(loadedChannels);
+      logEvent('channels_loaded', {
+        elapsed,
+        total: loadedChannels.length,
+        ...logContext,
+        ...(loadedEventDataRef.current ? loadedEventDataRef.current(loadedChannels) : {})
+      });
+    } catch {
+      const elapsed = Math.round(performance.now() - startedAt);
+      recordMetric('channels_load_ms', elapsed, { background, failed: true, ...metricContext });
+      if (!preserveOnError) {
+        setStatus('error');
+      }
+      logEvent('channels_load_failed', { elapsed, background, ...logContext });
     }
-
-    applyLoadedChannels(loadedChannels);
-    logEvent('channels_loaded', {
-      elapsed,
-      total: loadedChannels.length,
-      ...logContext,
-      ...(loadedEventDataRef.current ? loadedEventDataRef.current(loadedChannels) : {})
-    });
   }, [applyLoadedChannels, loadChannels, logContext, metricContext]);
 
   useEffect(() => {
+    let hasFreshCache = false;
+    let hasAnyCachedChannels = false;
+
     if (typeof window !== 'undefined') {
       const cached = window.sessionStorage.getItem(cacheKey);
 
@@ -73,10 +87,18 @@ export default function useCachedChannelLoader({
             typeof parsed.cachedAt === 'number' &&
             Date.now() - parsed.cachedAt <= CACHE_TTL_MS;
 
-          if (freshCache && Array.isArray(parsed.channels) && parsed.channels.length) {
+          if (Array.isArray(parsed.channels) && parsed.channels.length) {
+            hasAnyCachedChannels = true;
             setChannels(parsed.channels);
             setStatus('ready');
-            logEvent('channels_cache_hydrated', { total: parsed.channels.length, ...logContext });
+            logEvent('channels_cache_hydrated', {
+              total: parsed.channels.length,
+              fresh: freshCache,
+              ...logContext
+            });
+            if (freshCache) {
+              hasFreshCache = true;
+            }
           }
         } catch {
           // ignore corrupted cache
@@ -84,12 +106,21 @@ export default function useCachedChannelLoader({
       }
     }
 
-    loadAllChannels(true);
+    if (hasFreshCache) {
+      return;
+    }
+
+    if (hasAnyCachedChannels) {
+      loadAllChannels({ background: true, preserveOnError: true });
+      return;
+    }
+
+    loadAllChannels({ background: false, preserveOnError: false });
   }, [cacheKey, loadAllChannels, logContext]);
 
   return {
     status,
     channels,
-    retry: () => loadAllChannels(false)
+    retry: () => loadAllChannels({ background: false, preserveOnError: false })
   };
 }

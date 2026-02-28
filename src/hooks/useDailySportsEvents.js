@@ -5,15 +5,63 @@ import { filterInternationalSportsEvents, readGeneratedSportsEvents } from '@/ut
 
 const REMOTE_EVENTS_URL = 'https://daily-sports-events.mhshakil555.workers.dev/events.json?refresh=1';
 const CACHE_TTL_MS = 60 * 1000;
+const SESSION_CACHE_KEY = 'bdiptv_events_cache';
 
 let cachedParsedEvents = null;
 let cachedAt = 0;
 let inFlightRequest = null;
 
+function readSessionCache() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const raw = window.sessionStorage.getItem(SESSION_CACHE_KEY);
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (
+      Array.isArray(parsed?.events) &&
+      typeof parsed?.cachedAt === 'number' &&
+      Date.now() - parsed.cachedAt <= CACHE_TTL_MS
+    ) {
+      return parsed.events;
+    }
+  } catch {
+    // ignore corrupted cache
+  }
+
+  return null;
+}
+
+function writeSessionCache(events) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.sessionStorage.setItem(
+    SESSION_CACHE_KEY,
+    JSON.stringify({
+      events,
+      cachedAt: Date.now()
+    })
+  );
+}
+
 async function loadRemoteEventsPayload() {
   const now = Date.now();
   if (cachedParsedEvents && now - cachedAt < CACHE_TTL_MS) {
     return { events: cachedParsedEvents, source: 'remote', error: '' };
+  }
+
+  const sessionCachedEvents = readSessionCache();
+  if (sessionCachedEvents) {
+    cachedParsedEvents = sessionCachedEvents;
+    cachedAt = Date.now();
+    return { events: sessionCachedEvents, source: 'remote', error: '' };
   }
 
   if (!inFlightRequest) {
@@ -34,6 +82,7 @@ async function loadRemoteEventsPayload() {
       const parsedEvents = readGeneratedSportsEvents(payload);
       cachedParsedEvents = parsedEvents;
       cachedAt = Date.now();
+      writeSessionCache(parsedEvents);
       return parsedEvents;
     })()
       .finally(() => {
