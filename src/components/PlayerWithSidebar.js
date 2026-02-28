@@ -51,13 +51,8 @@ export default function PlayerWithSidebar({
               {metaText}
             </p>
           </div>
-          <p className="text-center text-[10px] font-medium tracking-[0.04em] text-steel/70">
-              Sponsored
-          </p>
           {showAds && adsConfig?.slots?.sidebar?.enabled ? (
-            <div className="min-w-0 w-full overflow-hidden rounded-lg" style={{ minHeight: '50px', height: '250px', maxHeight: '250px' }}>
-              <AdSlot slot="sidebar" adsConfig={adsConfig} />
-            </div>
+            <AdSlot slot="sidebar" adsConfig={adsConfig} className="min-w-0 w-full overflow-hidden rounded-lg" />
           ) : null}
 
           <div className="w-full min-w-0 overflow-hidden shrink-0">

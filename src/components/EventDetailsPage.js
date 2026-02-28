@@ -76,9 +76,11 @@ export default function EventDetailsPage() {
       </section>
 
       {showAds && adsConfig?.slots?.eventTop?.enabled ? (
-        <section className="rounded-2xl border border-steel/20 bg-white/90 p-3 shadow-card">
-          <AdSlot slot="eventTop" adsConfig={adsConfig} className="min-h-[50px] md:min-h-[90px]" />
-        </section>
+        <AdSlot
+          slot="eventTop"
+          adsConfig={adsConfig}
+          className="rounded-2xl border border-steel/20 bg-white/90 p-3 shadow-card"
+        />
       ) : null}
 
       {event ? (
@@ -131,9 +133,11 @@ export default function EventDetailsPage() {
       ) : null}
 
       {showAds && adsConfig?.slots?.eventBottom?.enabled ? (
-        <section className="rounded-2xl border border-steel/20 bg-white/90 p-3 shadow-card">
-          <AdSlot slot="eventBottom" adsConfig={adsConfig} className="min-h-[250px]" />
-        </section>
+        <AdSlot
+          slot="eventBottom"
+          adsConfig={adsConfig}
+          className="rounded-2xl border border-steel/20 bg-white/90 p-3 shadow-card"
+        />
       ) : null}
     </main>
   );
