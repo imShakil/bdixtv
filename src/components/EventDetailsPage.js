@@ -36,7 +36,7 @@ export default function EventDetailsPage() {
     [eventId, events]
   );
   const shouldLoadCatalog = Boolean(event?.channels?.length);
-  const { channels: catalogChannels } = useChannelCatalog({ enabled: shouldLoadCatalog });
+  const { channels: catalogChannels, isLoading: isCatalogLoading } = useChannelCatalog({ enabled: shouldLoadCatalog });
 
   const channelMatches = useMemo(() => {
     if (!event || !Array.isArray(event.channels)) {
@@ -115,7 +115,11 @@ export default function EventDetailsPage() {
 
           <div className="space-y-2">
             <h2 className="text-sm font-bold uppercase tracking-[0.08em] text-ink">Channels</h2>
-            {channelMatches.length > 0 ? (
+            {isCatalogLoading ? (
+              <div className="py-2">
+                <InlineLoader />
+              </div>
+            ) : channelMatches.length > 0 ? (
               <ul className="space-y-2 text-sm text-steel">
                 {channelMatches.map(({ name, matches }) => (
                   <li

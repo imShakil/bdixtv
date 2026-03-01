@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
+import InlineLoader from '@/components/InlineLoader';
 import { isLikelyM3uSource, normalizeIframeSource } from '@/utils/sourceUtils';
 import { logEvent } from '@/utils/telemetry';
 
@@ -142,7 +143,7 @@ function MixedContentWarning({ httpPlayerUrl }) {
   );
 }
 
-export default function VideoPlayer({ channel, autoplay }) {
+export default function VideoPlayer({ channel, autoplay, isLoading = false }) {
   const isMobile = useMemo(() => {
     if (typeof navigator === 'undefined') {
       return false;
@@ -195,6 +196,14 @@ export default function VideoPlayer({ channel, autoplay }) {
   };
 
   if (!channel) {
+    if (isLoading) {
+      return (
+        <div className="flex min-h-[260px] items-center justify-center rounded-2xl border border-steel/20 bg-white/85 p-10 md:min-h-[420px]">
+          <InlineLoader />
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-[260px] items-center justify-center rounded-2xl border border-steel/20 bg-white/85 p-10 text-steel md:min-h-[420px]">
         Select a channel to start streaming.

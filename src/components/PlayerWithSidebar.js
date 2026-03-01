@@ -3,6 +3,7 @@
 import VideoPlayer from '@/components/VideoPlayer';
 import AdSlot from '@/components/AdSlot';
 import LiveVisitorCount from '@/components/LiveVisitorCount';
+import InlineLoader from '@/components/InlineLoader';
 import { Capacitor } from '@capacitor/core';
 
 export default function PlayerWithSidebar({
@@ -16,17 +17,18 @@ export default function PlayerWithSidebar({
   isRewardedCtaLoading = false,
   emptyTitle = 'No channel selected',
   emptySubtitle = 'Select a channel from the list below.',
-  getMetaText
+  getMetaText,
+  isPlayerLoading = false
 }) {
   const metaText = selectedChannel
     ? (getMetaText?.(selectedChannel) || '')
-    : emptySubtitle;
+    : (isPlayerLoading ? '' : emptySubtitle);
   const isNativeRuntime = Capacitor.getPlatform() !== 'web';
 
   return (
     <div className="grid gap-3 md:gap-4 lg:grid-cols-[minmax(0,2.3fr)_minmax(0,1fr)] lg:grid-rows-[1fr]">
       <div className="min-w-0">
-        <VideoPlayer channel={selectedChannel} autoplay={autoplay} />
+        <VideoPlayer channel={selectedChannel} autoplay={autoplay} isLoading={isPlayerLoading} />
       </div>
 
       {/* Outer wrapper takes the grid cell height, inner div clips */}
@@ -51,11 +53,16 @@ export default function PlayerWithSidebar({
               </div>
             </div>
             <p className="truncate pt-1 text-base font-semibold text-ink">
-              {selectedChannel ? selectedChannel.name : emptyTitle}
+              {selectedChannel ? selectedChannel.name : (isPlayerLoading ? '' : emptyTitle)}
             </p>
             <p className="truncate text-xs text-steel">
               {metaText}
             </p>
+            {isPlayerLoading ? (
+              <div className="pt-2">
+                <InlineLoader size="sm" />
+              </div>
+            ) : null}
             {showRewardedCta ? (
               <button
                 type="button"

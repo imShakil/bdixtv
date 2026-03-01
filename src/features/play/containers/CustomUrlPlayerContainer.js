@@ -61,6 +61,74 @@ function getQueryParam(search, key) {
   return '';
 }
 
+function analyzePlaylistSignature(text) {
+  const lines = text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) {
+    return { isPlaylist: false };
+  }
+
+  const lowerText = text.toLowerCase();
+  const extinfLines = lines.filter((line) => line.startsWith('#EXTINF'));
+  const urlLikeLines = lines.filter((line) => !line.startsWith('#') && /^https?:\/\//i.test(line));
+  const hasHlsMediaTags = lines.some((line) => (
+    line.startsWith('#EXT-X-TARGETDURATION')
+    || line.startsWith('#EXT-X-MEDIA-SEQUENCE')
+    || line.startsWith('#EXT-X-ENDLIST')
+    || line.startsWith('#EXT-X-PART')
+    || line.startsWith('#EXT-X-MAP')
+  ));
+  const hasMasterTag = lines.some((line) => line.startsWith('#EXT-X-STREAM-INF'));
+  const hasIptvAttrs = extinfLines.some((line) => /(tvg-|group-title=|catchup=)/i.test(line));
+  const hasIframeHtml = /<iframe[\s>]/i.test(lowerText);
+
+  if (hasIframeHtml) {
+    return { isPlaylist: false, inferredType: 'iframe' };
+  }
+
+  // IPTV-style M3U playlists usually have EXTINF with tvg/group-title attributes.
+  if (hasIptvAttrs) {
+    return { isPlaylist: true };
+  }
+
+  // HLS manifests (master/media) should be treated as a single playable stream URL.
+  if (hasMasterTag || hasHlsMediaTags) {
+    return { isPlaylist: false };
+  }
+
+  // Plain URL list (txt/no-extension): treat as playlist when multiple URLs exist.
+  if (urlLikeLines.length > 1) {
+    return { isPlaylist: true };
+  }
+
+  // Single URL line or unknown signature should fall back to single-stream behavior.
+  return { isPlaylist: false };
+}
+
+async function detectSourceKind(url) {
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      cache: 'no-store',
+      headers: {
+        Accept: 'text/plain,application/vnd.apple.mpegurl,application/x-mpegURL,text/html,*/*'
+      }
+    });
+
+    if (!response.ok) {
+      return { isPlaylist: false, inferredType: '' };
+    }
+
+    const text = await response.text();
+    return analyzePlaylistSignature(text);
+  } catch {
+    return { isPlaylist: false, inferredType: '' };
+  }
+}
+
 export default function CustomUrlPlayerPage() {
   const [customUrl, setCustomUrl] = useState('');
   const [customType, setCustomType] = useState('auto');
@@ -69,6 +137,7 @@ export default function CustomUrlPlayerPage() {
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [playlistChannels, setPlaylistChannels] = useState([]);
   const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(false);
+  const [isResolvingRedirect, setIsResolvingRedirect] = useState(false);
   const autoLoadKeyRef = useRef('');
   const adsConfig = useAdsConfig();
   const {
@@ -97,6 +166,7 @@ export default function CustomUrlPlayerPage() {
   const totalChannels = playlistChannels.length;
   const filteredCount = filteredPlaylistChannels.length;
   const hasActiveFilters = query.trim().length > 0 || category !== 'all';
+  const isPlayRouteLoading = hideUrlInputBar && !selectedChannel && (isResolvingRedirect || isLoadingPlaylist);
 
   const resetPlaylistState = useCallback(() => {
     setPlaylistChannels([]);
@@ -127,23 +197,45 @@ export default function CustomUrlPlayerPage() {
     if (resolvedType === 'm3u8') {
       setIsLoadingPlaylist(true);
       try {
-        const parsedChannels = await loadPlaylistChannelsFromUrl(value);
+        const detected = selectedType === 'auto'
+          ? await detectSourceKind(value)
+          : { isPlaylist: true, inferredType: '' };
 
-        if (Array.isArray(parsedChannels) && parsedChannels.length > 1) {
-          const nameMatch = name
-            ? parsedChannels.find((channel) => channel.name?.trim().toLowerCase() === name.trim().toLowerCase())
-            : null;
-          const selectedFromPlaylist = nameMatch
-            ? nameMatch
-            : (name ? { ...parsedChannels[0], name } : parsedChannels[0]);
-          setPlaylistChannels(parsedChannels);
-          setQuery('');
-          setCategory('all');
-          setPage(1);
-          setSelectedChannel(selectedFromPlaylist);
+        if (detected.inferredType === 'iframe') {
+          resetPlaylistState();
+          setSelectedChannel({
+            id: `custom-url-${Date.now()}`,
+            name: name || 'Custom URL Stream',
+            logo: '',
+            type: 'iframe',
+            source: value,
+            category: 'User Stream',
+            language: '',
+            origin: 'custom'
+          });
           setCustomError('');
-          logEvent('custom_playlist_loaded', { count: parsedChannels.length });
           return;
+        }
+
+        if (detected.isPlaylist) {
+          const parsedChannels = await loadPlaylistChannelsFromUrl(value);
+
+          if (Array.isArray(parsedChannels) && parsedChannels.length > 1) {
+            const nameMatch = name
+              ? parsedChannels.find((channel) => channel.name?.trim().toLowerCase() === name.trim().toLowerCase())
+              : null;
+            const selectedFromPlaylist = nameMatch
+              ? nameMatch
+              : (name ? { ...parsedChannels[0], name } : parsedChannels[0]);
+            setPlaylistChannels(parsedChannels);
+            setQuery('');
+            setCategory('all');
+            setPage(1);
+            setSelectedChannel(selectedFromPlaylist);
+            setCustomError('');
+            logEvent('custom_playlist_loaded', { count: parsedChannels.length });
+            return;
+          }
         }
       } finally {
         setIsLoadingPlaylist(false);
@@ -194,14 +286,17 @@ export default function CustomUrlPlayerPage() {
     }
     autoLoadKeyRef.current = key;
     setHideUrlInputBar(true);
+    setIsResolvingRedirect(true);
 
     // Keep redirected channel URL out of the visible input.
     setCustomUrl('');
     setCustomType(validType);
-    playCustomUrl({
+    Promise.resolve(playCustomUrl({
       value: urlParam,
       selectedType: validType,
       name: nameParam
+    })).finally(() => {
+      setIsResolvingRedirect(false);
     });
   }, [playCustomUrl]);
 
@@ -262,6 +357,7 @@ export default function CustomUrlPlayerPage() {
           <PlayerWithSidebar
             selectedChannel={selectedChannel}
             autoplay={Boolean(selectedChannel)}
+            isPlayerLoading={isPlayRouteLoading}
             showAds={showAds}
             adsConfig={adsConfig}
             showRewardedCta={rewardedEnabled}
