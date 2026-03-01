@@ -1,32 +1,54 @@
 export const SITE_BRANDING = {
-  eyebrow: 'Buffering Free',
-  title: 'BDIX IPTV',
-  metadataTitle: 'BDIX IPTV | Watch Live Streaming',
+  eyebrow: 'Just dekho!',
+  title: 'Dekho Prime',
+  tagline: 'Just dekho!',
+  metadataTitle: 'Dekho Prime | Live TV & Sports Streaming',
   description:
-    'Browse and play live TV channels from public playlists and your own custom stream URLs in one place.'
+    'Dekho Prime lets you watch live TV channels, sports events, and custom stream URLs in one smooth streaming experience.',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://livetv.imshakil.online',
+  logoPath: '/uploads/dekho-prime-horizontal-logo.png',
+  iconPath: '/uploads/dekho-prime-512x512.png',
+  ogImagePath: '/uploads/dekho-prime-og-1200x630.png',
+  keywords: [
+    'Dekho Prime',
+    'live tv streaming',
+    'iptv player',
+    'sports live stream',
+    'm3u8 player',
+    'online tv channels',
+    'bdix iptv',
+    'bdix server',
+    'bdix m3u8',
+    'bdix streaming',
+    'iptv bd',
+    'bangladeshi tv channels',
+    'bangladeshi iptv'
+  ]
 };
 
 export const PLAY_PAGE_METADATA = {
-  title: 'Play Custom URL | BDIX IPTV',
-  description: 'Play your own M3U8, iframe, or direct stream URL in BDIX IPTV player.'
+  title: 'Play Custom URL',
+  description: 'Play your own M3U8, iframe, or direct stream URL directly inside Dekho Prime.'
 };
 
 export const FEATURING_PAGE_METADATA = {
-  title: 'Featuring Channels | BDIX IPTV',
-  description: 'Browse only featured custom channels from your local custom list.'
+  title: 'Featuring Channels',
+  eyebrow: 'BDIX Server',
+  description: 'Discover featured channels curated for fast and reliable watching.'
 };
 
 export const WORLD_PAGE_METADATA = {
-  title: 'World TV | BDIX IPTV',
-  description: 'Browse global IPTV channels loaded from the public playlist.'
+  title: 'World IPTV',
+  eyebrow: 'Global Playlist',
+  description: 'Browse global TV channels from public playlists in one place.'
 };
 
 export const EVENTS_PAGE_METADATA = {
-  title: 'Daily Sports Events | BDIX IPTV',
-  description: 'Track today\'s cricket and football event schedule in your local timezone.'
+  title: 'Daily Sports Events',
+  description: 'Track cricket and football event schedules with quick channel access.'
 };
 
 export const EVENT_DETAILS_PAGE_METADATA = {
-  title: 'Event Details | BDIX IPTV',
-  description: 'View full sports event details with full channel availability.'
+  title: 'Event Details',
+  description: 'View full event details and available channels for each sports match.'
 };

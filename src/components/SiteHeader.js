@@ -35,9 +35,18 @@ export default function SiteHeader() {
       <nav className="safe-area-x mx-auto w-full max-w-[1440px] px-3 py-3 md:flex md:items-center md:justify-between md:gap-4 md:px-4 xl:px-5">
         <div className="flex items-center justify-between gap-3">
           <a href="/" className="flex min-w-0 items-center gap-2">
-            <img src="/icon.svg" alt="BDIX IPTV logo" className="h-7 w-7 shrink-0 rounded-lg border border-steel/20 md:h-8 md:w-8" />
-            <span className="truncate text-sm font-extrabold tracking-tight text-ink sm:text-base md:text-lg">
-              {SITE_BRANDING.title}
+            <img
+              src="/uploads/dekho-prime-icon-header-128.png"
+              alt={`${SITE_BRANDING.title} logo icon`}
+              className="h-8 w-8 shrink-0 rounded-lg border border-steel/15 bg-white object-contain p-0.5 md:h-9 md:w-9"
+            />
+            <span className="min-w-0">
+              <span className="block truncate text-base font-extrabold tracking-tight text-ink sm:text-lg md:text-xl">
+                {SITE_BRANDING.title}
+              </span>
+              <span className="hidden truncate text-xs font-medium uppercase tracking-[0.06em] text-steel/90 sm:block">
+                {SITE_BRANDING.tagline}
+              </span>
             </span>
           </a>
           <button

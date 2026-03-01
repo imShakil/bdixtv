@@ -4,19 +4,54 @@ import ConsentBanner from '@/components/ConsentBanner';
 import SiteHeader from '@/components/SiteHeader';
 import { SITE_BRANDING } from '@/config/site';
 
+const siteUrl = SITE_BRANDING.siteUrl;
+const absoluteOgImageUrl = new URL(SITE_BRANDING.ogImagePath, siteUrl).toString();
+
 export const metadata = {
-  title: SITE_BRANDING.metadataTitle,
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: SITE_BRANDING.metadataTitle,
+    template: `%s | ${SITE_BRANDING.title}`
+  },
   description: SITE_BRANDING.description,
-  keywords: ['IPTV', 'live tv', 'm3u8', 'streaming', 'bdix tv'],
+  applicationName: SITE_BRANDING.title,
+  keywords: SITE_BRANDING.keywords,
+  alternates: {
+    canonical: '/'
+  },
+  category: 'entertainment',
+  robots: {
+    index: true,
+    follow: true
+  },
+  icons: {
+    icon: [
+      { url: SITE_BRANDING.iconPath, sizes: '512x512', type: 'image/png' },
+      { url: '/uploads/dekho-prime-icon-192.png', sizes: '192x192', type: 'image/png' }
+    ],
+    apple: [{ url: '/uploads/dekho-prime-icon-180.png', sizes: '180x180', type: 'image/png' }],
+    shortcut: [SITE_BRANDING.iconPath]
+  },
   openGraph: {
     title: SITE_BRANDING.metadataTitle,
     description: SITE_BRANDING.description,
-    type: 'website'
+    url: siteUrl,
+    siteName: SITE_BRANDING.title,
+    type: 'website',
+    images: [
+      {
+        url: absoluteOgImageUrl,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_BRANDING.title} logo`
+      }
+    ]
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: SITE_BRANDING.metadataTitle,
-    description: SITE_BRANDING.description
+    description: SITE_BRANDING.description,
+    images: [absoluteOgImageUrl]
   }
 };
 
@@ -27,9 +62,21 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
+  const schemaOrg = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_BRANDING.title,
+    alternateName: SITE_BRANDING.tagline,
+    description: SITE_BRANDING.description,
+    url: siteUrl
+  };
+
   return (
     <html lang="en">
       <head>
+        <meta name="theme-color" content="#0891b2" />
+        <meta name="apple-mobile-web-app-title" content={SITE_BRANDING.title} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }} />
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-YY76ZPGRHG"

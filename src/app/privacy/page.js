@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Privacy Policy - BD IPTV',
+  title: 'Privacy Policy',
   description: 'Privacy policy and data protection information'
 };
 

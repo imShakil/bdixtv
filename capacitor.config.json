@@ -1,6 +1,6 @@
 {
   "appId": "com.imshakil.bdiptv",
-  "appName": "BD IPTV",
+  "appName": "Dekho Prime",
   "webDir": "out",
   "android": {
     "path": "mobile-app/android"

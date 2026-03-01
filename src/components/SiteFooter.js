@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import LiveVisitorCount from '@/components/LiveVisitorCount';
+import { SITE_BRANDING } from '@/config/site';
 
 export default function SiteFooter() {
   return (
@@ -10,7 +11,7 @@ export default function SiteFooter() {
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink md:text-sm">Disclaimer</p>
 
             <div className="space-y-1 text-xs leading-relaxed md:text-sm">
-              <p>BDIX IPTV indexes publicly available stream links from third-party sources.
+              <p>{SITE_BRANDING.title} indexes publicly available stream links from third-party sources.
                 We do not host, own, rebroadcast, or control any stream content.
                 All channel names, logos, and media rights belong to their respective owners.
               </p>
@@ -34,7 +35,7 @@ export default function SiteFooter() {
 
           <div className="border-t border-steel/15 pt-2.5 text-[11px] leading-relaxed md:col-span-2 md:text-xs">
             <p className="text-center md:text-left">
-              © {new Date().getFullYear()} <a href="/">BDIX IPTV</a> · Use at your own discretion ·{' '}
+              © {new Date().getFullYear()} <a href="/">{SITE_BRANDING.title}</a> · Use at your own discretion ·{' '}
               <Link href="/privacy" className="text-sea hover:underline">
                 Privacy Policy
               </Link>
