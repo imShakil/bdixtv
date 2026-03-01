@@ -8,6 +8,16 @@
 
 :root {
   color-scheme: light;
+  --color-ink: 11 18 35;
+  --color-steel: 81 98 125;
+  --color-sand: 243 248 255;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --color-ink: 255 255 255;
+  --color-steel: 160 172 192;
+  --color-sand: 5 11 28;
 }
 
 .safe-area-top {
@@ -34,11 +44,18 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
+    radial-gradient(circle at 8% 14%, rgba(0, 163, 255, 0.09), transparent 40%),
+    radial-gradient(circle at 95% 6%, rgba(255, 138, 0, 0.07), transparent 35%),
+    linear-gradient(160deg, #f7fbff 0%, #edf5ff 45%, #f5faff 100%);
+  color: rgb(var(--color-ink));
+  font-family: "IBM Plex Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html[data-theme='dark'] body {
+  background:
     radial-gradient(circle at 10% 15%, rgba(0, 163, 255, 0.18), transparent 34%),
     radial-gradient(circle at 90% 8%, rgba(255, 138, 0, 0.14), transparent 30%),
     linear-gradient(160deg, #050b1c 0%, #081227 45%, #050b1c 100%);
-  color: #ffffff;
-  font-family: "IBM Plex Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Prevent iOS input-focus auto zoom inside the app webview. */
@@ -53,43 +70,43 @@ body {
 }
 
 @layer utilities {
-  .bg-white {
+  html[data-theme='dark'] .bg-white {
     background-color: rgba(10, 18, 36, 0.95) !important;
   }
 
-  .bg-white\/95 {
+  html[data-theme='dark'] .bg-white\/95 {
     background-color: rgba(10, 18, 36, 0.95) !important;
   }
 
-  .bg-white\/90 {
+  html[data-theme='dark'] .bg-white\/90 {
     background-color: rgba(10, 18, 36, 0.9) !important;
   }
 
-  .bg-white\/85 {
+  html[data-theme='dark'] .bg-white\/85 {
     background-color: rgba(10, 18, 36, 0.85) !important;
   }
 
-  .bg-white\/80 {
+  html[data-theme='dark'] .bg-white\/80 {
     background-color: rgba(10, 18, 36, 0.8) !important;
   }
 
-  .bg-white\/75 {
+  html[data-theme='dark'] .bg-white\/75 {
     background-color: rgba(8, 15, 31, 0.8) !important;
   }
 
-  .bg-white\/60 {
+  html[data-theme='dark'] .bg-white\/60 {
     background-color: rgba(8, 15, 31, 0.68) !important;
   }
 
-  .bg-slate-50 {
+  html[data-theme='dark'] .bg-slate-50 {
     background-color: rgba(14, 27, 50, 0.9) !important;
   }
 
-  .bg-cyan-50 {
+  html[data-theme='dark'] .bg-cyan-50 {
     background-color: rgba(0, 163, 255, 0.14) !important;
   }
 
-  .hover\:bg-slate-50:hover {
+  html[data-theme='dark'] .hover\:bg-slate-50:hover {
     background-color: rgba(0, 163, 255, 0.12) !important;
   }
 }

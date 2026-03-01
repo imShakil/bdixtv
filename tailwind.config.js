@@ -10,10 +10,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: '#FFFFFF',
-        steel: '#A0ACC0',
+        ink: 'rgb(var(--color-ink) / <alpha-value>)',
+        steel: 'rgb(var(--color-steel) / <alpha-value>)',
         sea: '#00A3FF',
-        sand: '#050B1C',
+        sand: 'rgb(var(--color-sand) / <alpha-value>)',
         ember: '#FF8A00'
       },
       boxShadow: {

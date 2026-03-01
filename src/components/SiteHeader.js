@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { SITE_BRANDING } from '@/config/site';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const MENU_ITEMS = [
   { label: 'Home', href: '/' },
@@ -79,6 +80,7 @@ export default function SiteHeader() {
               </Link>
             );
           })}
+          <ThemeToggle />
         </div>
 
         {isMobileMenuOpen ? (
@@ -101,6 +103,9 @@ export default function SiteHeader() {
                 </Link>
               );
             })}
+            <div className="mt-2 border-t border-steel/15 pt-2">
+              <ThemeToggle mobile />
+            </div>
           </div>
         ) : null}
       </nav>

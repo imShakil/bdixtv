@@ -74,6 +74,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <script>{`
+          (function () {
+            try {
+              var saved = localStorage.getItem('bdiptv_theme_mode');
+              var theme = saved === 'dark' ? 'dark' : 'light';
+              document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {
+              document.documentElement.setAttribute('data-theme', 'light');
+            }
+          })();
+        `}</script>
         <meta name="theme-color" content="#050B1C" />
         <meta name="apple-mobile-web-app-title" content={SITE_BRANDING.title} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }} />
